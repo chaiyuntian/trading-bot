@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+eggs/
+*.egg
+.Python
+env/
+venv/
+.venv/
+
+# Config with secrets
+config/config.yaml
+config/config.yml
+*.env
+.env
+
+# Data & Logs
+logs/*.log
+data/*.csv
+data/*.json
+*.db
+*.sqlite3
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Trading specific
+*.pem
+*.key
+backtest_results/
