@@ -104,7 +104,7 @@ def test_ensemble_rich_signal_has_regime():
     df = make_sample_df()
     sig = strategy.generate_rich_signal(df)
     assert sig.signal in (Signal.BUY, Signal.SELL, Signal.HOLD)
-    assert "Regime=" in sig.reason
+    assert "R=" in sig.reason
 
 
 def test_strategy_handles_small_data():

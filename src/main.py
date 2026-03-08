@@ -5,6 +5,9 @@ Usage:
   python -m src                      # Run bot (paper trading)
   python -m src --backtest           # Run backtest
   python -m src --backtest-all       # Backtest all strategies
+  python -m src --walk-forward       # Walk-forward validation (anti-overfit)
+  python -m src --monte-carlo        # Monte Carlo robustness test
+  python -m src --validate           # Full validation suite (WF + MC)
   python -m src --config path        # Custom config file
   python -m src --strategy rsi_macd  # Override strategy
 """
@@ -15,6 +18,8 @@ import sys
 import yaml
 from src.bot import TradingBot, STRATEGY_MAP
 from src.backtesting.engine import BacktestEngine
+from src.backtesting.walk_forward import WalkForwardValidator
+from src.backtesting.monte_carlo import MonteCarloSimulator
 from src.utils.logger import setup_logger
 
 
@@ -115,6 +120,94 @@ def run_all_backtests(config: dict):
     return results
 
 
+def run_walk_forward(config: dict, strategy_name: str = None):
+    """Walk-forward validation — the anti-overfitting test."""
+    name = strategy_name or config["strategy"]["name"]
+    if name not in STRATEGY_MAP:
+        print(f"Unknown strategy: {name}")
+        return None
+
+    df = fetch_backtest_data(config)
+    validator = WalkForwardValidator(
+        config, STRATEGY_MAP[name],
+        train_periods=4, test_periods=1, n_folds=6
+    )
+    return validator.run(df)
+
+
+def run_monte_carlo(config: dict, strategy_name: str = None):
+    """Monte Carlo robustness test — is profit skill or luck?"""
+    name = strategy_name or config["strategy"]["name"]
+    if name not in STRATEGY_MAP:
+        print(f"Unknown strategy: {name}")
+        return None
+
+    # First run a regular backtest to get trade PnLs
+    strategy = STRATEGY_MAP[name](config)
+    df = fetch_backtest_data(config)
+    engine = BacktestEngine(config, strategy)
+    engine.run(df)
+
+    # Extract PnLs from closed trades
+    trade_pnls = [
+        t.pnl for t in engine.risk_manager.closed_trades
+        if t.pnl is not None
+    ]
+
+    if not trade_pnls:
+        print("No trades to simulate!")
+        return None
+
+    mc = MonteCarloSimulator(
+        initial_capital=float(config["trading"]["initial_capital"]),
+        n_simulations=1000,
+    )
+    return mc.run(trade_pnls)
+
+
+def run_full_validation(config: dict, strategy_name: str = None):
+    """Complete validation suite: Walk-Forward + Monte Carlo."""
+    name = strategy_name or config["strategy"]["name"]
+    print("\n" + "#" * 70)
+    print(f"  FULL VALIDATION SUITE: {name}")
+    print("#" * 70)
+
+    # 1. Walk-Forward
+    print("\n  [1/2] Walk-Forward Validation...")
+    wf_result = run_walk_forward(config, name)
+
+    # 2. Monte Carlo
+    print("\n  [2/2] Monte Carlo Robustness Test...")
+    mc_result = run_monte_carlo(config, name)
+
+    # Final verdict
+    print("\n" + "#" * 70)
+    print("  FINAL VALIDATION VERDICT")
+    print("#" * 70)
+
+    wf_pass = wf_result and wf_result.get("valid", False)
+    mc_pass = mc_result and mc_result.get("robust", False)
+
+    print(f"  Walk-Forward:  {'PASS' if wf_pass else 'FAIL'}")
+    print(f"  Monte Carlo:   {'PASS' if mc_pass else 'FAIL'}")
+
+    if wf_pass and mc_pass:
+        print("\n  STRATEGY VALIDATED -- Ready for paper trading.")
+        print("  Paper trade for 2+ weeks before deploying with real capital.")
+    elif wf_pass:
+        print("\n  PARTIALLY VALIDATED -- Walk-Forward passed, but Monte Carlo failed.")
+        print("  Strategy may be sensitive to trade sequencing. Use with caution.")
+    elif mc_pass:
+        print("\n  PARTIALLY VALIDATED -- Monte Carlo passed, but Walk-Forward failed.")
+        print("  Strategy may be overfitted to specific time periods.")
+    else:
+        print("\n  STRATEGY FAILED VALIDATION")
+        print("  DO NOT deploy with real money. Needs parameter tuning or redesign.")
+
+    print("#" * 70 + "\n")
+    return {"walk_forward": wf_result, "monte_carlo": mc_result}
+
+
 def main():
     parser = argparse.ArgumentParser(description="Crypto Trading Bot")
     parser.add_argument("--config", default="config/config.yaml",
@@ -123,6 +216,12 @@ def main():
                         help="Run backtest mode")
     parser.add_argument("--backtest-all", action="store_true",
                         help="Backtest all strategies and compare")
+    parser.add_argument("--walk-forward", action="store_true",
+                        help="Walk-forward validation (anti-overfit test)")
+    parser.add_argument("--monte-carlo", action="store_true",
+                        help="Monte Carlo robustness test")
+    parser.add_argument("--validate", action="store_true",
+                        help="Full validation suite (WF + MC)")
     parser.add_argument("--strategy", type=str, default=None,
                         help="Override strategy name")
     args = parser.parse_args()
@@ -140,7 +239,13 @@ def main():
         console=log_cfg.get("console", True),
     )
 
-    if args.backtest_all:
+    if args.validate:
+        run_full_validation(config)
+    elif args.walk_forward:
+        run_walk_forward(config)
+    elif args.monte_carlo:
+        run_monte_carlo(config)
+    elif args.backtest_all:
         run_all_backtests(config)
     elif args.backtest:
         run_backtest(config)

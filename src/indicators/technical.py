@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import pandas_ta as ta
 
 
@@ -61,6 +62,83 @@ def add_stochastic_rsi(df: pd.DataFrame, period: int = 14) -> pd.DataFrame:
     if stoch is not None:
         df["stoch_rsi_k"] = stoch.iloc[:, 0]
         df["stoch_rsi_d"] = stoch.iloc[:, 1]
+    return df
+
+
+def add_kama(df: pd.DataFrame, period: int = 10,
+             fast_sc: int = 2, slow_sc: int = 30) -> pd.DataFrame:
+    """Kaufman's Adaptive Moving Average (KAMA).
+
+    Adapts speed based on Efficiency Ratio (ER):
+    - High ER (trending): behaves like fast EMA
+    - Low ER (noisy): behaves like slow EMA
+    Far fewer whipsaw signals than SMA/EMA.
+    """
+    close = df["close"].values
+    n = len(close)
+    if n < period + 1:
+        df[f"kama_{period}"] = float("nan")
+        return df
+
+    # Smoothing constants
+    fast_alpha = 2.0 / (fast_sc + 1)
+    slow_alpha = 2.0 / (slow_sc + 1)
+
+    kama = np.full(n, float("nan"))
+    kama[period - 1] = close[period - 1]
+
+    for i in range(period, n):
+        # Efficiency Ratio = direction / volatility
+        direction = abs(close[i] - close[i - period])
+        volatility = sum(abs(close[j] - close[j - 1]) for j in range(i - period + 1, i + 1))
+
+        if volatility == 0:
+            er = 0
+        else:
+            er = direction / volatility
+
+        # Smoothing constant adapts between fast and slow
+        sc = (er * (fast_alpha - slow_alpha) + slow_alpha) ** 2
+        kama[i] = kama[i - 1] + sc * (close[i] - kama[i - 1])
+
+    df[f"kama_{period}"] = kama
+    return df
+
+
+def add_vwap_deviation(df: pd.DataFrame, period: int = 20) -> pd.DataFrame:
+    """VWAP Deviation Z-Score.
+
+    Z > +2.0: Overbought relative to institutional fair value (mean-reversion short)
+    Z < -2.0: Oversold relative to institutional fair value (mean-reversion long)
+    Historical reversion rate at 2.0+ extremes: 60-75%.
+    """
+    typical_price = (df["high"] + df["low"] + df["close"]) / 3
+    cumvol = df["volume"].rolling(period).sum()
+    vwap = (typical_price * df["volume"]).rolling(period).sum() / cumvol
+
+    deviation = df["close"] - vwap
+    std = deviation.rolling(period).std()
+    z_score = deviation / std
+
+    df["vwap"] = vwap
+    df["vwap_z"] = z_score
+    return df
+
+
+def add_efficiency_ratio(df: pd.DataFrame, period: int = 10) -> pd.DataFrame:
+    """Kaufman's Efficiency Ratio (ER).
+
+    ER = 1.0: perfect trend (all movement in one direction)
+    ER = 0.0: pure noise (lots of movement, no net direction)
+
+    Used for regime detection and adaptive indicator tuning.
+    """
+    close = df["close"]
+    direction = abs(close - close.shift(period))
+    volatility = abs(close - close.shift(1)).rolling(period).sum()
+    er = direction / volatility
+    er = er.fillna(0)
+    df[f"er_{period}"] = er
     return df
 
 
