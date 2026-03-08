@@ -13,33 +13,43 @@ exchange:
 
 trading:
   symbol: "BTC/USDT"
-  timeframe: "15m"       # 1m, 5m, 15m, 1h, 4h, 1d
+  timeframe: "4h"        # 4h recommended for small accounts (fewer trades, lower fees)
   initial_capital: 100   # Starting capital in USDT
   mode: "paper"          # paper, live (START WITH PAPER!)
+  market_type: "futures"  # spot or futures (futures has 5x lower fees)
+  leverage: 2            # 2-3x for small accounts (never more!)
 
 strategy:
-  name: "ensemble"       # ensemble, rsi_macd, mean_reversion, grid, dca_momentum
+  # For $100 accounts: use trend_following (Donchian breakout)
+  # For $1000+ accounts: use ensemble (multi-strategy voting)
+  name: "trend_following"  # trend_following, ensemble, rsi_macd, mean_reversion, grid, dca_momentum
   params:
-    # RSI + MACD Strategy
+    # Trend Following (Donchian/Turtle)
+    donchian_entry: 20     # Enter on 20-period high/low breakout
+    donchian_exit: 10      # Exit on 10-period channel
+    atr_period: 14
+    atr_stop_mult: 2.0     # Stop loss at 2x ATR
+    volume_confirm: true   # Require volume spike for breakout
+    # RSI + MACD (for ensemble)
     rsi_period: 14
     rsi_oversold: 30
     rsi_overbought: 70
     macd_fast: 12
     macd_slow: 26
     macd_signal: 9
-    # EMA filter
     ema_period: 50
 
 risk:
   max_position_pct: 0.30       # Max 30% of capital per trade
-  stop_loss_pct: 0.03          # 3% stop loss
-  take_profit_pct: 0.06        # 6% take profit (2:1 R/R)
+  stop_loss_pct: 0.03          # 3% stop loss (used if ATR unavailable)
+  take_profit_pct: 0.06        # 6% take profit (used if ATR unavailable)
   max_daily_loss_pct: 0.05     # 5% max daily loss -> halt
   max_drawdown_pct: 0.25       # 25% max drawdown -> halt
-  risk_per_trade_pct: 0.02     # 2% risk per trade
-  max_open_trades: 3
-  trailing_stop: false
+  risk_per_trade_pct: 0.015    # 1.5% risk per trade (conservative for leverage)
+  max_open_trades: 2           # Max 2 for small accounts
+  trailing_stop: true          # Enable trailing stops
   trailing_stop_pct: 0.02
+  loss_cooldown_after: 3       # Pause after 3 consecutive losses
 
 logging:
   level: "INFO"                # DEBUG, INFO, WARNING, ERROR

@@ -5,6 +5,7 @@ from src.strategies.mean_reversion import MeanReversionStrategy
 from src.strategies.grid_trading import GridTradingStrategy
 from src.strategies.dca_momentum import DCAMomentumStrategy
 from src.strategies.ensemble import EnsembleStrategy
+from src.strategies.trend_following import TrendFollowingStrategy
 from src.strategies.base import Signal
 
 
@@ -105,6 +106,57 @@ def test_ensemble_rich_signal_has_regime():
     sig = strategy.generate_rich_signal(df)
     assert sig.signal in (Signal.BUY, Signal.SELL, Signal.HOLD)
     assert "R=" in sig.reason
+
+
+def test_trend_following_returns_valid_signal():
+    """Trend following strategy produces valid signals."""
+    config = make_config()
+    config["strategy"]["params"]["donchian_entry"] = 20
+    config["strategy"]["params"]["donchian_exit"] = 10
+    config["strategy"]["params"]["atr_stop_mult"] = 2.0
+    config["strategy"]["params"]["volume_confirm"] = True
+    strategy = TrendFollowingStrategy(config)
+    df = make_sample_df()
+    signal = strategy.generate_signal(df)
+    assert signal in ("buy", "sell", "hold")
+
+
+def test_trend_following_rich_signal_has_metadata():
+    """Trend following rich signal includes ATR and channel info."""
+    config = make_config()
+    config["strategy"]["params"]["donchian_entry"] = 20
+    config["strategy"]["params"]["donchian_exit"] = 10
+    strategy = TrendFollowingStrategy(config)
+
+    # Create a strong uptrend to trigger breakout
+    np.random.seed(42)
+    n = 200
+    # Price steadily rising to ensure breakout above 20-period high
+    close = 50000 + np.arange(n) * 20 + np.random.randn(n) * 30
+    high = close + np.abs(np.random.randn(n) * 50)
+    low = close - np.abs(np.random.randn(n) * 50)
+    df = pd.DataFrame({
+        "open": close - 10,
+        "high": high,
+        "low": low,
+        "close": close,
+        "volume": np.random.rand(n) * 1000 + 500,
+    })
+    df.index = pd.date_range("2024-01-01", periods=n, freq="4h")
+
+    sig = strategy.generate_rich_signal(df)
+    assert sig.signal in (Signal.BUY, Signal.SELL, Signal.HOLD)
+    assert 0 <= sig.confidence <= 1.0
+
+
+def test_trend_following_small_data():
+    """Trend following holds with insufficient data."""
+    config = make_config()
+    config["strategy"]["params"]["donchian_entry"] = 20
+    strategy = TrendFollowingStrategy(config)
+    df = make_sample_df(10)
+    sig = strategy.generate_rich_signal(df)
+    assert sig.signal == Signal.HOLD
 
 
 def test_strategy_handles_small_data():

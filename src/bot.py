@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 from src.exchange.base import ExchangeAdapter, OrderSide, OrderType, OrderStatus
 from src.exchange.ccxt_adapter import CCXTAdapter
 from src.exchange.paper_adapter import PaperAdapter
+from src.exchange.futures_adapter import FuturesAdapter
 from src.risk.manager import RiskManager
 from src.strategies.base import BaseStrategy, Signal
 from src.strategies.rsi_macd import RsiMacdStrategy
@@ -20,6 +21,7 @@ from src.strategies.mean_reversion import MeanReversionStrategy
 from src.strategies.grid_trading import GridTradingStrategy
 from src.strategies.dca_momentum import DCAMomentumStrategy
 from src.strategies.ensemble import EnsembleStrategy
+from src.strategies.trend_following import TrendFollowingStrategy
 from src.utils.logger import setup_logger
 
 logger = setup_logger("bot")
@@ -30,6 +32,7 @@ STRATEGY_MAP = {
     "grid": GridTradingStrategy,
     "dca_momentum": DCAMomentumStrategy,
     "ensemble": EnsembleStrategy,
+    "trend_following": TrendFollowingStrategy,
 }
 
 # Timeframe to seconds mapping
@@ -42,10 +45,15 @@ _TF_SECONDS = {
 def create_exchange(config: dict) -> ExchangeAdapter:
     """Factory: create the right exchange adapter based on config."""
     mode = config["trading"].get("mode", "paper")
-    if mode == "live":
-        adapter = CCXTAdapter(config)
-    else:
+    market_type = config["trading"].get("market_type", "spot")
+
+    if mode == "paper":
         adapter = PaperAdapter(config)
+    elif market_type == "futures":
+        adapter = FuturesAdapter(config)
+    else:
+        adapter = CCXTAdapter(config)
+
     adapter.connect()
     return adapter
 

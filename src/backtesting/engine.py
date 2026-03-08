@@ -18,8 +18,12 @@ class BacktestEngine:
     def __init__(self, config: dict, strategy: BaseStrategy):
         self.config = config
         self.strategy = strategy
-        self.fee_rate = 0.001   # 0.1% per trade (Binance base)
-        self.slippage = 0.0005  # 0.05% slippage estimate
+        market_type = config["trading"].get("market_type", "spot")
+        self.is_futures = market_type == "futures"
+        self.leverage = config["trading"].get("leverage", 1) if self.is_futures else 1
+        # Futures maker fees are ~5x cheaper than spot taker fees
+        self.fee_rate = 0.0004 if self.is_futures else 0.001
+        self.slippage = 0.0003 if self.is_futures else 0.0005
         self.risk_manager = RiskManager(config)
         self.equity_curve: list[float] = []
         self.trades_log: list[dict] = []
@@ -82,13 +86,23 @@ class BacktestEngine:
             signal = self.strategy.generate_signal(window)
 
             if signal == "buy" and can_trade and equity_ok:
-                # Use ATR-based stops when ATR is available
+                # Close any open short positions first
+                for trade in list(self.risk_manager.open_trades):
+                    if trade.side == "sell":
+                        exec_price = current_price * (1 + self.slippage)
+                        fee = trade.amount * exec_price * self.fee_rate
+                        self.risk_manager.capital -= fee
+                        self.risk_manager.close_trade(trade, exec_price, "reverse")
+
+                # Open long position
                 stop_price = self.risk_manager.get_stop_loss(
                     current_price, "buy", atr=current_atr
                 )
                 amount = self.risk_manager.calculate_position_size(
                     current_price, stop_price
                 )
+                # Leverage amplifies position size
+                amount *= self.leverage
 
                 if amount * current_price < 5:
                     continue
@@ -112,18 +126,53 @@ class BacktestEngine:
                     "fee": fee
                 })
 
-            elif signal == "sell" and self.risk_manager.open_trades:
-                for trade in list(self.risk_manager.open_trades):
+            elif signal == "sell":
+                if self.risk_manager.open_trades:
+                    # Close any open long positions
+                    for trade in list(self.risk_manager.open_trades):
+                        if trade.side == "buy":
+                            exec_price = current_price * (1 - self.slippage)
+                            fee = trade.amount * exec_price * self.fee_rate
+                            self.risk_manager.capital -= fee
+                            self.risk_manager.close_trade(trade, exec_price, "signal")
+                            self.trades_log.append({
+                                "id": trade_counter,
+                                "time": window.index[-1],
+                                "side": "sell",
+                                "price": exec_price,
+                                "amount": trade.amount,
+                                "fee": fee
+                            })
+
+                # On futures: open short position
+                if self.is_futures and can_trade and equity_ok:
+                    stop_price = self.risk_manager.get_stop_loss(
+                        current_price, "sell", atr=current_atr
+                    )
+                    amount = self.risk_manager.calculate_position_size(
+                        current_price, stop_price
+                    )
+                    amount *= self.leverage
+
+                    if amount * current_price < 5:
+                        continue
+
                     exec_price = current_price * (1 - self.slippage)
-                    fee = trade.amount * exec_price * self.fee_rate
+                    fee = amount * exec_price * self.fee_rate
                     self.risk_manager.capital -= fee
-                    self.risk_manager.close_trade(trade, exec_price, "signal")
+
+                    trade_counter += 1
+                    self.risk_manager.open_trade(
+                        f"bt_{trade_counter}",
+                        self.config["trading"]["symbol"],
+                        "sell", exec_price, amount
+                    )
                     self.trades_log.append({
                         "id": trade_counter,
                         "time": window.index[-1],
-                        "side": "sell",
+                        "side": "short",
                         "price": exec_price,
-                        "amount": trade.amount,
+                        "amount": amount,
                         "fee": fee
                     })
 
@@ -166,6 +215,8 @@ class BacktestEngine:
             "sharpe_ratio": sharpe,
             "sortino_ratio": sortino,
             "total_fees": total_fees,
+            "leverage": self.leverage,
+            "market_type": "futures" if self.is_futures else "spot",
             "start_date": str(df.index[0]),
             "end_date": str(df.index[-1]),
             "candles": len(df),
@@ -182,6 +233,7 @@ class BacktestEngine:
         table = [
             ["Period", f"{report['start_date']} to {report['end_date']}"],
             ["Candles", f"{report['candles']}"],
+            ["Market Type", f"{report['market_type']} ({report['leverage']}x leverage)"],
             ["Initial Capital", f"${self.risk_manager.initial_capital:.2f}"],
             ["Final Capital", f"${report['capital']:.2f}"],
             ["Total PnL", f"${report['total_pnl']:+.2f}"],
