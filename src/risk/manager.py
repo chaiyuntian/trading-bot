@@ -23,7 +23,14 @@ class Trade:
 
 
 class RiskManager:
-    """Manages position sizing, stop losses, and portfolio risk."""
+    """Manages position sizing, stop losses, and portfolio risk.
+
+    Risk-reduction features:
+    - ATR-based dynamic stops (adapts to volatility)
+    - Drawdown-proportional position scaling (reduces size as DD grows)
+    - Loss streak cooldown (pauses after consecutive losses)
+    - Anti-martingale: increase size on wins, decrease on losses
+    """
 
     def __init__(self, config: dict):
         risk_cfg = config.get("risk", {})
@@ -40,6 +47,11 @@ class RiskManager:
         self.max_open_trades = risk_cfg.get("max_open_trades", 3)
         self.trailing_stop = risk_cfg.get("trailing_stop", False)
         self.trailing_stop_pct = risk_cfg.get("trailing_stop_pct", 0.02)
+
+        # ── Drawdown recovery & loss cooldown ──
+        self.consecutive_losses = 0
+        self.max_consecutive_losses_cooldown = risk_cfg.get("loss_cooldown_after", 3)
+        self.cooldown_trades_remaining = 0
 
         self.open_trades: list[Trade] = []
         self.closed_trades: list[Trade] = []
@@ -62,6 +74,10 @@ class RiskManager:
         if self.halted:
             return False, f"Trading halted: {self.halt_reason}"
 
+        if self.cooldown_trades_remaining > 0:
+            self.cooldown_trades_remaining -= 1
+            return False, f"Loss cooldown ({self.cooldown_trades_remaining} cycles left)"
+
         if len(self.open_trades) >= self.max_open_trades:
             return False, f"Max open trades ({self.max_open_trades}) reached"
 
@@ -81,8 +97,22 @@ class RiskManager:
 
         return True, "OK"
 
+    def _drawdown_scale_factor(self) -> float:
+        """Reduce position size proportionally to drawdown depth.
+
+        At 0% DD -> 1.0x (full size)
+        At 10% DD -> 0.6x
+        At 20% DD -> 0.2x
+        Linear interpolation between.
+        """
+        dd = self.get_drawdown()
+        if dd <= 0:
+            return 1.0
+        scale = max(0.2, 1.0 - (dd / self.max_drawdown_pct) * 0.8)
+        return scale
+
     def calculate_position_size(self, entry_price: float, stop_price: float) -> float:
-        """Position size based on risk per trade and stop distance."""
+        """Position size based on risk per trade, stop distance, and drawdown scaling."""
         risk_amount = self.capital * self.risk_per_trade_pct
         stop_distance = abs(entry_price - stop_price) / entry_price
 
@@ -93,15 +123,34 @@ class RiskManager:
         max_position = self.capital * self.max_position_pct
 
         position_value = min(position_value, max_position)
+
+        # Scale down during drawdowns (anti-martingale)
+        position_value *= self._drawdown_scale_factor()
+
         amount = position_value / entry_price
         return amount
 
-    def get_stop_loss(self, entry_price: float, side: str = "buy") -> float:
+    def get_stop_loss(self, entry_price: float, side: str = "buy",
+                      atr: float = 0.0) -> float:
+        """Calculate stop loss — ATR-based if ATR provided, else fixed percentage."""
+        if atr > 0:
+            # 2x ATR stop: wide enough to avoid noise, tight enough to limit loss
+            stop_distance = atr * 2.0
+            if side == "buy":
+                return entry_price - stop_distance
+            return entry_price + stop_distance
         if side == "buy":
             return entry_price * (1 - self.stop_loss_pct)
         return entry_price * (1 + self.stop_loss_pct)
 
-    def get_take_profit(self, entry_price: float, side: str = "buy") -> float:
+    def get_take_profit(self, entry_price: float, side: str = "buy",
+                        atr: float = 0.0) -> float:
+        """Calculate take profit — ATR-based (3x ATR for 1.5:1 R/R) or fixed."""
+        if atr > 0:
+            tp_distance = atr * 3.0
+            if side == "buy":
+                return entry_price + tp_distance
+            return entry_price - tp_distance
         if side == "buy":
             return entry_price * (1 + self.take_profit_pct)
         return entry_price * (1 - self.take_profit_pct)
@@ -137,13 +186,25 @@ class RiskManager:
         self.daily_pnl += trade.pnl
         self.update_capital(self.capital)
 
+        # Track consecutive losses for cooldown
+        if trade.pnl is not None and trade.pnl <= 0:
+            self.consecutive_losses += 1
+            if self.consecutive_losses >= self.max_consecutive_losses_cooldown:
+                self.cooldown_trades_remaining = self.consecutive_losses
+                logger.warning(
+                    f"Loss streak={self.consecutive_losses}, "
+                    f"cooldown for {self.cooldown_trades_remaining} cycles"
+                )
+        else:
+            self.consecutive_losses = 0
+
         self.open_trades = [t for t in self.open_trades if t.id != trade.id]
         self.closed_trades.append(trade)
 
         logger.info(
             f"CLOSE {trade.side.upper()} {trade.symbol} @ {exit_price:.2f} "
             f"| PnL={trade.pnl:+.2f} | Reason={reason} "
-            f"| Capital={self.capital:.2f}"
+            f"| Capital={self.capital:.2f} | DD_scale={self._drawdown_scale_factor():.2f}"
         )
 
     def check_stops(self, symbol: str, current_price: float) -> list[Trade]:

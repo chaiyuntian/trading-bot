@@ -98,3 +98,64 @@ def test_stats():
     assert stats["wins"] == 1
     assert stats["losses"] == 1
     assert stats["win_rate"] == 0.5
+
+
+def test_atr_based_stop_loss():
+    """ATR-based stops adapt to volatility."""
+    rm = RiskManager(make_config())
+    entry = 50000
+    atr = 500  # $500 ATR
+
+    sl = rm.get_stop_loss(entry, "buy", atr=atr)
+    assert sl == entry - (atr * 2.0)  # 2x ATR below entry
+
+    tp = rm.get_take_profit(entry, "buy", atr=atr)
+    assert tp == entry + (atr * 3.0)  # 3x ATR above entry (1.5:1 R/R)
+
+
+def test_drawdown_scale_factor():
+    """Position size shrinks as drawdown deepens."""
+    rm = RiskManager(make_config())
+    # No drawdown -> full size
+    assert rm._drawdown_scale_factor() == 1.0
+
+    # 10% drawdown (40% of max 25%) -> reduced
+    rm.capital = 90
+    rm.peak_capital = 100
+    scale = rm._drawdown_scale_factor()
+    assert 0.2 < scale < 1.0
+
+    # At max drawdown -> minimum scale
+    rm.capital = 75
+    rm.peak_capital = 100
+    scale = rm._drawdown_scale_factor()
+    assert scale == 0.2
+
+
+def test_loss_cooldown():
+    """After consecutive losses, trading pauses briefly."""
+    rm = RiskManager(make_config(loss_cooldown_after=2))
+    rm.max_consecutive_losses_cooldown = 2
+
+    # Two consecutive losses -> cooldown triggers
+    t1 = rm.open_trade("t1", "BTC/USDT", "buy", 50000, 0.001)
+    rm.close_trade(t1, 49000)  # Loss 1
+    t2 = rm.open_trade("t2", "BTC/USDT", "buy", 50000, 0.001)
+    rm.close_trade(t2, 49000)  # Loss 2 -> cooldown
+
+    assert rm.cooldown_trades_remaining > 0
+    can, reason = rm.can_open_trade()
+    assert can is False
+    assert "cooldown" in reason.lower()
+
+
+def test_win_resets_loss_streak():
+    """A winning trade resets the consecutive loss counter."""
+    rm = RiskManager(make_config())
+    t1 = rm.open_trade("t1", "BTC/USDT", "buy", 50000, 0.001)
+    rm.close_trade(t1, 49000)  # Loss
+    assert rm.consecutive_losses == 1
+
+    t2 = rm.open_trade("t2", "BTC/USDT", "buy", 50000, 0.001)
+    rm.close_trade(t2, 51000)  # Win
+    assert rm.consecutive_losses == 0

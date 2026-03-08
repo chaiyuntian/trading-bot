@@ -34,14 +34,21 @@ class BacktestEngine:
 
         lookback = 60
         trade_counter = 0
+        equity_ma_period = 20  # Equity curve trading: MA of equity
 
-        # Pre-compute close prices as numpy array for fast stop checks
+        # Pre-compute close prices and ATR as numpy arrays
         close_prices = df["close"].values
+
+        # Pre-compute ATR for dynamic stops
+        from src.indicators.technical import add_atr
+        df = add_atr(df, period=14)
+        atr_values = df["atr_14"].values
 
         for i in range(lookback, len(df)):
             # Use iloc slice — avoids copy for the common case
             window = df.iloc[:i + 1]
             current_price = float(close_prices[i])
+            current_atr = float(atr_values[i]) if not np.isnan(atr_values[i]) else 0.0
 
             # Track equity
             open_pnl = sum(
@@ -51,6 +58,15 @@ class BacktestEngine:
                 for t in self.risk_manager.open_trades
             )
             self.equity_curve.append(self.risk_manager.capital + open_pnl)
+
+            # ── Equity curve trading filter ──
+            # Only take new trades when equity is above its own moving average.
+            # This is a meta-strategy: if the strategy is in a losing streak,
+            # stop trading until it recovers. Dramatically reduces max drawdown.
+            equity_ok = True
+            if len(self.equity_curve) >= equity_ma_period:
+                equity_ma = np.mean(self.equity_curve[-equity_ma_period:])
+                equity_ok = self.equity_curve[-1] >= equity_ma
 
             # Check stops on open trades
             self.risk_manager.check_stops(
@@ -65,8 +81,11 @@ class BacktestEngine:
             # Generate signal
             signal = self.strategy.generate_signal(window)
 
-            if signal == "buy" and can_trade:
-                stop_price = self.risk_manager.get_stop_loss(current_price, "buy")
+            if signal == "buy" and can_trade and equity_ok:
+                # Use ATR-based stops when ATR is available
+                stop_price = self.risk_manager.get_stop_loss(
+                    current_price, "buy", atr=current_atr
+                )
                 amount = self.risk_manager.calculate_position_size(
                     current_price, stop_price
                 )

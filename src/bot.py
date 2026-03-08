@@ -175,7 +175,16 @@ class TradingBot:
             trade_signal = self.strategy.generate_rich_signal(df)
 
             if trade_signal.signal == Signal.BUY and can_trade:
-                stop_price = self.risk_manager.get_stop_loss(current_price, "buy")
+                # Use ATR-based stops when available
+                current_atr = 0.0
+                if f"atr_14" in df.columns:
+                    atr_val = df.iloc[-1].get("atr_14")
+                    if atr_val is not None and not (isinstance(atr_val, float) and atr_val != atr_val):
+                        current_atr = float(atr_val)
+
+                stop_price = self.risk_manager.get_stop_loss(
+                    current_price, "buy", atr=current_atr
+                )
                 amount = self.risk_manager.calculate_position_size(
                     current_price, stop_price
                 )
