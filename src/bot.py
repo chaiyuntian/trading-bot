@@ -1,10 +1,20 @@
+"""Main trading bot — orchestrates exchange, strategy, and risk management.
+
+Uses the ExchangeAdapter abstraction layer so it works with any platform:
+- CCXTAdapter for live trading on 100+ exchanges
+- PaperAdapter for simulated trading with real market data
+- Any future adapter (Alpaca, IBKR, DEX, etc.)
+"""
+
 import time
 import uuid
-import schedule
-from datetime import datetime
-from src.exchange.client import ExchangeClient
+from datetime import datetime, timezone
+
+from src.exchange.base import ExchangeAdapter, OrderSide, OrderType, OrderStatus
+from src.exchange.ccxt_adapter import CCXTAdapter
+from src.exchange.paper_adapter import PaperAdapter
 from src.risk.manager import RiskManager
-from src.strategies.base import BaseStrategy
+from src.strategies.base import BaseStrategy, Signal
 from src.strategies.rsi_macd import RsiMacdStrategy
 from src.strategies.mean_reversion import MeanReversionStrategy
 from src.strategies.grid_trading import GridTradingStrategy
@@ -20,27 +30,41 @@ STRATEGY_MAP = {
     "dca_momentum": DCAMomentumStrategy,
 }
 
+# Timeframe to seconds mapping
+_TF_SECONDS = {
+    "1m": 60, "3m": 180, "5m": 300, "15m": 900,
+    "30m": 1800, "1h": 3600, "4h": 14400, "1d": 86400,
+}
+
+
+def create_exchange(config: dict) -> ExchangeAdapter:
+    """Factory: create the right exchange adapter based on config."""
+    mode = config["trading"].get("mode", "paper")
+    if mode == "live":
+        adapter = CCXTAdapter(config)
+    else:
+        adapter = PaperAdapter(config)
+    adapter.connect()
+    return adapter
+
 
 class TradingBot:
-    """Main trading bot that orchestrates exchange, strategy, and risk."""
+    """Main trading bot that orchestrates exchange, strategy, and risk.
 
-    def __init__(self, config: dict):
+    Platform-agnostic: operates through ExchangeAdapter interface.
+    Can be connected to any exchange or broker by swapping the adapter.
+    """
+
+    def __init__(self, config: dict, exchange: ExchangeAdapter = None):
         self.config = config
         self.mode = config["trading"].get("mode", "paper")
         self.symbol = config["trading"]["symbol"]
         self.timeframe = config["trading"]["timeframe"]
 
-        # Paper trading state
-        self.paper_balance = float(config["trading"]["initial_capital"])
-        self.paper_holdings = 0.0
+        # Exchange adapter (platform-agnostic)
+        self.exchange: ExchangeAdapter = exchange or create_exchange(config)
 
-        # Initialize components
-        if self.mode == "live":
-            self.exchange = ExchangeClient(config)
-        else:
-            self.exchange = None
-            logger.info("Running in PAPER TRADING mode (no real exchange)")
-
+        # Strategy
         strategy_name = config["strategy"]["name"]
         if strategy_name not in STRATEGY_MAP:
             raise ValueError(
@@ -50,8 +74,14 @@ class TradingBot:
         self.strategy: BaseStrategy = STRATEGY_MAP[strategy_name](config)
         self.risk_manager = RiskManager(config)
 
+        # Performance: cache last OHLCV fetch to avoid redundant API calls
+        self._last_df = None
+        self._last_fetch_ts = 0
+        self._min_fetch_interval = max(30, _TF_SECONDS.get(self.timeframe, 900) * 0.5)
+
         self.running = False
         self.cycle_count = 0
+        self._last_daily_reset = datetime.now(timezone.utc).date()
 
         logger.info(
             f"Bot initialized | Strategy={self.strategy.name()} | "
@@ -59,92 +89,67 @@ class TradingBot:
         )
 
     def fetch_data(self):
-        if self.exchange:
-            return self.exchange.fetch_ohlcv(self.symbol, self.timeframe, limit=200)
+        """Fetch OHLCV data via the exchange adapter, with caching."""
+        now = time.monotonic()
+        if self._last_df is not None and (now - self._last_fetch_ts) < self._min_fetch_interval:
+            return self._last_df
 
-        # Paper mode: fetch from public API without auth
-        import ccxt
-        exchange = ccxt.binance({"enableRateLimit": True})
-        raw = exchange.fetch_ohlcv(self.symbol, self.timeframe, limit=200)
-        import pandas as pd
-        df = pd.DataFrame(raw, columns=["timestamp", "open", "high", "low", "close", "volume"])
-        df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
-        df.set_index("timestamp", inplace=True)
+        df = self.exchange.fetch_ohlcv(self.symbol, self.timeframe, limit=200)
+        self._last_df = df
+        self._last_fetch_ts = now
         return df
 
-    def execute_buy(self, price: float, amount: float):
-        cost = amount * price
-        fee = cost * 0.001
-
-        if self.mode == "live" and self.exchange:
-            try:
-                order = self.exchange.create_market_buy(self.symbol, amount)
-                actual_price = float(order.get("average", price))
-                self.risk_manager.open_trade(
-                    order["id"], self.symbol, "buy", actual_price, amount
-                )
-                return order
-            except Exception as e:
-                logger.error(f"Buy order failed: {e}")
+    def _execute_buy(self, price: float, amount: float):
+        """Execute a buy order through the exchange adapter."""
+        try:
+            result = self.exchange.market_buy(self.symbol, amount)
+            if result.status == OrderStatus.REJECTED:
+                logger.warning(f"Buy rejected: insufficient balance")
                 return None
-        else:
-            # Paper trading
-            if cost + fee > self.paper_balance:
-                amount = (self.paper_balance * 0.99) / price
-                cost = amount * price
-                fee = cost * 0.001
 
-            self.paper_balance -= (cost + fee)
-            self.paper_holdings += amount
-
-            trade_id = f"paper_{uuid.uuid4().hex[:8]}"
+            exec_price = result.price if result.price > 0 else price
             self.risk_manager.open_trade(
-                trade_id, self.symbol, "buy", price, amount
+                result.id, self.symbol, "buy", exec_price, result.filled or amount
             )
-            logger.info(
-                f"[PAPER] BUY {amount:.6f} @ {price:.2f} "
-                f"| Cost=${cost:.2f} Fee=${fee:.4f} "
-                f"| Balance=${self.paper_balance:.2f}"
-            )
-            return {"id": trade_id, "status": "paper"}
+            return result
+        except Exception as e:
+            logger.error(f"Buy order failed: {e}")
+            return None
 
-    def execute_sell(self, price: float):
+    def _execute_sell(self, price: float):
+        """Close all open positions via the exchange adapter."""
         if not self.risk_manager.open_trades:
             return None
 
-        if self.mode == "live" and self.exchange:
-            for trade in list(self.risk_manager.open_trades):
-                try:
-                    order = self.exchange.create_market_sell(
-                        self.symbol, trade.amount
-                    )
-                    actual_price = float(order.get("average", price))
-                    self.risk_manager.close_trade(trade, actual_price, "signal")
-                    return order
-                except Exception as e:
-                    logger.error(f"Sell order failed: {e}")
-                    return None
-        else:
-            # Paper trading
-            for trade in list(self.risk_manager.open_trades):
-                revenue = trade.amount * price
-                fee = revenue * 0.001
-                self.paper_balance += (revenue - fee)
-                self.paper_holdings -= trade.amount
-                self.risk_manager.close_trade(trade, price, "signal")
-                logger.info(
-                    f"[PAPER] SELL {trade.amount:.6f} @ {price:.2f} "
-                    f"| Revenue=${revenue:.2f} Fee=${fee:.4f} "
-                    f"| Balance=${self.paper_balance:.2f}"
-                )
-            return {"status": "paper_sold"}
+        results = []
+        for trade in list(self.risk_manager.open_trades):
+            try:
+                result = self.exchange.market_sell(self.symbol, trade.amount)
+                if result.status == OrderStatus.REJECTED:
+                    logger.warning(f"Sell rejected for trade {trade.id}")
+                    continue
+                exec_price = result.price if result.price > 0 else price
+                self.risk_manager.close_trade(trade, exec_price, "signal")
+                results.append(result)
+            except Exception as e:
+                logger.error(f"Sell order failed for trade {trade.id}: {e}")
+
+        return results if results else None
+
+    def _check_daily_reset(self):
+        """Reset daily loss counters at UTC midnight."""
+        today = datetime.now(timezone.utc).date()
+        if today != self._last_daily_reset:
+            self.risk_manager.reset_daily()
+            self._last_daily_reset = today
+            logger.info("Daily risk counters reset")
 
     def run_cycle(self):
         """Execute one trading cycle."""
         self.cycle_count += 1
+        self._check_daily_reset()
 
         try:
-            # Fetch market data
             df = self.fetch_data()
             if df is None or len(df) < 60:
                 logger.warning("Insufficient data, skipping cycle")
@@ -152,38 +157,46 @@ class TradingBot:
 
             current_price = float(df.iloc[-1]["close"])
 
-            # Check stops first
+            # Check stop-loss / take-profit on open trades
             stopped = self.risk_manager.check_stops(self.symbol, current_price)
-            if stopped:
-                for trade in stopped:
-                    if self.mode != "live":
-                        revenue = trade.amount * trade.exit_price
-                        self.paper_balance += revenue
-                        self.paper_holdings -= trade.amount
+            for trade in stopped:
+                # Execute the stop on exchange
+                try:
+                    self.exchange.market_sell(self.symbol, trade.amount)
+                except Exception:
+                    pass  # Already closed in risk manager
 
-            # Check if we can trade
+            # Can we open new trades?
             can_trade, reason = self.risk_manager.can_open_trade()
 
-            # Generate signal
-            signal = self.strategy.generate_signal(df)
+            # Generate signal (uses rich signal for confidence)
+            trade_signal = self.strategy.generate_rich_signal(df)
 
-            # Execute
-            if signal == "buy" and can_trade:
+            if trade_signal.signal == Signal.BUY and can_trade:
                 stop_price = self.risk_manager.get_stop_loss(current_price, "buy")
                 amount = self.risk_manager.calculate_position_size(
                     current_price, stop_price
                 )
 
-                min_cost = 5.0
+                # Check minimum order size
+                try:
+                    info = self.exchange.get_market_info(self.symbol)
+                    min_cost = max(info.min_cost, 5.0)
+                except Exception:
+                    min_cost = 5.0
+
                 if amount * current_price >= min_cost:
-                    self.execute_buy(current_price, amount)
+                    # Scale position by confidence
+                    if trade_signal.confidence < 0.5:
+                        amount *= 0.5  # Half position on low confidence
+                    self._execute_buy(current_price, amount)
                 else:
                     logger.debug(
                         f"Order too small: ${amount * current_price:.2f} < ${min_cost}"
                     )
 
-            elif signal == "sell" and self.risk_manager.open_trades:
-                self.execute_sell(current_price)
+            elif trade_signal.signal == Signal.SELL and self.risk_manager.open_trades:
+                self._execute_sell(current_price)
 
             # Log status periodically
             if self.cycle_count % 10 == 0:
@@ -194,32 +207,32 @@ class TradingBot:
 
     def _log_status(self, price: float):
         stats = self.risk_manager.get_stats()
-        balance = self.paper_balance if self.mode != "live" else "N/A"
         open_count = len(self.risk_manager.open_trades)
+
+        # Get portfolio value for paper trading
+        portfolio = ""
+        if isinstance(self.exchange, PaperAdapter):
+            total = self.exchange.get_total_value(self.symbol)
+            portfolio = f"Portfolio=${total:.2f} | "
+
         logger.info(
             f"[Cycle #{self.cycle_count}] Price={price:.2f} | "
-            f"Balance=${balance} | Open={open_count} | "
+            f"{portfolio}"
+            f"Open={open_count} | "
             f"Trades={stats['total_trades']} | "
-            f"WR={stats['win_rate']:.0%} | PnL=${stats['total_pnl']:+.2f}"
+            f"WR={stats['win_rate']:.0%} | PnL=${stats['total_pnl']:+.2f} | "
+            f"DD={stats['max_drawdown']:.1%}"
         )
 
     def start(self):
         """Start the bot with scheduled execution."""
         self.running = True
-        logger.info(f"Starting bot... Timeframe={self.timeframe}")
+        interval = _TF_SECONDS.get(self.timeframe, 900)
 
-        # Map timeframe to seconds
-        tf_seconds = {
-            "1m": 60, "3m": 180, "5m": 300, "15m": 900,
-            "30m": 1800, "1h": 3600, "4h": 14400, "1d": 86400,
-        }
-        interval = tf_seconds.get(self.timeframe, 900)
+        logger.info(f"Starting bot... Interval={interval}s ({self.timeframe})")
 
         # Run first cycle immediately
         self.run_cycle()
-
-        # Schedule subsequent cycles
-        logger.info(f"Scheduling cycles every {interval}s ({self.timeframe})")
 
         while self.running:
             try:
@@ -236,8 +249,17 @@ class TradingBot:
     def stop(self):
         self.running = False
         stats = self.risk_manager.get_stats()
-        logger.info("=" * 50)
+
+        logger.info("=" * 60)
         logger.info("BOT STOPPED - Final Stats:")
         for key, val in stats.items():
-            logger.info(f"  {key}: {val}")
-        logger.info("=" * 50)
+            if isinstance(val, float):
+                logger.info(f"  {key}: {val:.4f}")
+            else:
+                logger.info(f"  {key}: {val}")
+        logger.info("=" * 60)
+
+        try:
+            self.exchange.disconnect()
+        except Exception:
+            pass
