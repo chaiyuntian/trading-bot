@@ -10,6 +10,11 @@ def add_rsi(df: pd.DataFrame, period: int = 14) -> pd.DataFrame:
 def add_macd(df: pd.DataFrame, fast: int = 12, slow: int = 26,
              signal: int = 9) -> pd.DataFrame:
     macd = ta.macd(df["close"], fast=fast, slow=slow, signal=signal)
+    if macd is None:
+        df["macd"] = None
+        df["macd_signal"] = None
+        df["macd_hist"] = None
+        return df
     df["macd"] = macd[f"MACD_{fast}_{slow}_{signal}"]
     df["macd_signal"] = macd[f"MACDs_{fast}_{slow}_{signal}"]
     df["macd_hist"] = macd[f"MACDh_{fast}_{slow}_{signal}"]
@@ -24,9 +29,19 @@ def add_ema(df: pd.DataFrame, period: int = 50) -> pd.DataFrame:
 def add_bollinger_bands(df: pd.DataFrame, period: int = 20,
                         std: float = 2.0) -> pd.DataFrame:
     bb = ta.bbands(df["close"], length=period, std=std)
-    df["bb_upper"] = bb[f"BBU_{period}_{std}"]
-    df["bb_middle"] = bb[f"BBM_{period}_{std}"]
-    df["bb_lower"] = bb[f"BBL_{period}_{std}"]
+    if bb is None:
+        df["bb_upper"] = None
+        df["bb_middle"] = None
+        df["bb_lower"] = None
+        df["bb_bandwidth"] = None
+        return df
+    # pandas-ta column names vary by version; find them dynamically
+    upper_col = [c for c in bb.columns if c.startswith("BBU_")][0]
+    middle_col = [c for c in bb.columns if c.startswith("BBM_")][0]
+    lower_col = [c for c in bb.columns if c.startswith("BBL_")][0]
+    df["bb_upper"] = bb[upper_col]
+    df["bb_middle"] = bb[middle_col]
+    df["bb_lower"] = bb[lower_col]
     df["bb_bandwidth"] = (df["bb_upper"] - df["bb_lower"]) / df["bb_middle"]
     return df
 

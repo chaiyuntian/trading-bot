@@ -1,5 +1,21 @@
+"""RSI + MACD Combination Strategy.
+
+BUY when:
+  - RSI crosses below oversold (30) and starts rising
+  - MACD histogram turns positive (bullish crossover)
+  - Price is above EMA (trend filter)
+  - Volume is above average (confirmation)
+
+SELL when:
+  - RSI crosses above overbought (70) and starts falling
+  - MACD histogram turns negative (bearish crossover)
+  - OR price drops below EMA
+
+Backtested win rate: ~65-73% on major crypto pairs.
+"""
+
 import pandas as pd
-from src.strategies.base import BaseStrategy
+from src.strategies.base import BaseStrategy, TradeSignal, Signal
 from src.indicators.technical import add_rsi, add_macd, add_ema, add_volume_sma
 from src.utils.logger import setup_logger
 
@@ -7,27 +23,13 @@ logger = setup_logger("strategy.rsi_macd")
 
 
 class RsiMacdStrategy(BaseStrategy):
-    """
-    RSI + MACD Combination Strategy
-    --------------------------------
-    BUY when:
-      - RSI crosses below oversold (30) and starts rising
-      - MACD histogram turns positive (bullish crossover)
-      - Price is above EMA (trend filter)
-      - Volume is above average (confirmation)
-
-    SELL when:
-      - RSI crosses above overbought (70) and starts falling
-      - MACD histogram turns negative (bearish crossover)
-      - OR price drops below EMA
-
-    Backtested win rate: ~65-73% on major pairs
-    """
-
-    def name(self) -> str:
-        return "RSI + MACD"
+    strategy_name = "RSI + MACD"
 
     def generate_signal(self, df: pd.DataFrame) -> str:
+        sig = self.generate_rich_signal(df)
+        return sig.signal.value
+
+    def generate_rich_signal(self, df: pd.DataFrame) -> TradeSignal:
         rsi_period = self.params.get("rsi_period", 14)
         rsi_oversold = self.params.get("rsi_oversold", 30)
         rsi_overbought = self.params.get("rsi_overbought", 70)
@@ -42,7 +44,7 @@ class RsiMacdStrategy(BaseStrategy):
 
         df = df.dropna()
         if len(df) < 3:
-            return "hold"
+            return TradeSignal(Signal.HOLD, 0.0, "Insufficient data")
 
         curr = df.iloc[-1]
         prev = df.iloc[-2]
@@ -59,7 +61,7 @@ class RsiMacdStrategy(BaseStrategy):
         vol = curr["volume"]
         vol_avg = curr["vol_sma_20"]
 
-        # BUY signal
+        # ── Score-based BUY signal ──
         rsi_oversold_recovery = rsi_prev <= rsi_oversold and rsi_now > rsi_prev
         rsi_low_zone = rsi_now < 45
         macd_bullish = macd_hist_now > macd_hist_prev
@@ -81,7 +83,7 @@ class RsiMacdStrategy(BaseStrategy):
         if volume_confirm:
             buy_score += 1
 
-        # SELL signal
+        # ── Score-based SELL signal ──
         rsi_overbought_drop = rsi_prev >= rsi_overbought and rsi_now < rsi_prev
         rsi_high_zone = rsi_now > 65
         macd_bearish = macd_hist_now < macd_hist_prev
@@ -101,16 +103,20 @@ class RsiMacdStrategy(BaseStrategy):
             sell_score += 2
 
         if buy_score >= 5:
-            logger.info(
-                f"BUY signal | RSI={rsi_now:.1f} MACD_hist={macd_hist_now:.4f} "
-                f"Price={price:.2f} EMA={ema_val:.2f} Score={buy_score}"
-            )
-            return "buy"
-        elif sell_score >= 5:
-            logger.info(
-                f"SELL signal | RSI={rsi_now:.1f} MACD_hist={macd_hist_now:.4f} "
-                f"Price={price:.2f} EMA={ema_val:.2f} Score={sell_score}"
-            )
-            return "sell"
+            confidence = min(1.0, buy_score / 11)
+            reason = (f"RSI={rsi_now:.1f} MACD_h={macd_hist_now:.4f} "
+                      f"Price={price:.2f} EMA={ema_val:.2f} Score={buy_score}")
+            logger.info(f"BUY signal | {reason}")
+            return TradeSignal(Signal.BUY, confidence, reason, entry_price=price)
 
-        return "hold"
+        if sell_score >= 5:
+            confidence = min(1.0, sell_score / 9)
+            reason = (f"RSI={rsi_now:.1f} MACD_h={macd_hist_now:.4f} "
+                      f"Price={price:.2f} EMA={ema_val:.2f} Score={sell_score}")
+            logger.info(f"SELL signal | {reason}")
+            return TradeSignal(Signal.SELL, confidence, reason, entry_price=price)
+
+        return TradeSignal(
+            Signal.HOLD, 0.0,
+            f"RSI={rsi_now:.1f} MACD_h={macd_hist_now:.4f} buy={buy_score} sell={sell_score}"
+        )
