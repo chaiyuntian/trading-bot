@@ -26,6 +26,7 @@ from src.alpha.trend import EmaTrendFilter, AdxTrendStrength, EmaSlopeDirection,
 from src.alpha.volatility import AtrSpike, PriceAcceleration
 from src.alpha.volume import VolumeConfirmation, VolumeSurge
 from src.alpha.structure import GridLevelProximity, StochRsiExtreme, HigherHighsLowerLows
+from src.alpha.multi_timeframe import HigherTFTrend, HTFMomentum, TrendAlignment
 from src.strategies.base import TradeSignal, Signal
 from src.strategies.regime import detect_regime, MarketRegime
 from src.utils.logger import setup_logger
@@ -35,19 +36,19 @@ logger = setup_logger("alpha.combiner")
 # Regime preference for each signal category
 REGIME_CATEGORY_WEIGHTS = {
     MarketRegime.TRENDING_UP: {
-        "momentum": 1.2, "trend": 1.3, "mean_reversion": 0.4,
-        "volatility": 0.8, "volume": 1.0, "structure": 0.7,
+        "momentum": 1.2, "trend": 1.5, "mean_reversion": 0.3,
+        "volatility": 0.8, "volume": 1.0, "structure": 0.6,
     },
     MarketRegime.TRENDING_DOWN: {
-        "momentum": 1.0, "trend": 1.1, "mean_reversion": 0.5,
-        "volatility": 0.8, "volume": 1.0, "structure": 0.7,
+        "momentum": 1.0, "trend": 1.3, "mean_reversion": 0.4,
+        "volatility": 0.8, "volume": 1.0, "structure": 0.6,
     },
     MarketRegime.RANGING: {
-        "momentum": 0.6, "trend": 0.5, "mean_reversion": 1.4,
+        "momentum": 0.6, "trend": 0.7, "mean_reversion": 1.4,
         "volatility": 0.8, "volume": 0.9, "structure": 1.2,
     },
     MarketRegime.VOLATILE: {
-        "momentum": 0.5, "trend": 0.7, "mean_reversion": 0.6,
+        "momentum": 0.5, "trend": 0.8, "mean_reversion": 0.5,
         "volatility": 1.5, "volume": 1.2, "structure": 0.8,
     },
 }
@@ -72,7 +73,13 @@ class SignalCombiner:
         # Trend bias — in crypto, long bias is profitable
         self.trend_bias = params.get("combiner_trend_bias", 0.05)  # slight long bias
 
+        timeframe = config.get("trading", {}).get("timeframe", "4h")
+
         self.signals: list[AlphaSignal] = [
+            # Multi-Timeframe (3) — highest priority
+            HigherTFTrend(timeframe),
+            HTFMomentum(timeframe),
+            TrendAlignment(timeframe),
             # Momentum (7)
             RsiOversoldRecovery(),
             RsiOverboughtDrop(),
