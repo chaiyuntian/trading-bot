@@ -27,6 +27,29 @@ from src.utils.logger import setup_logger
 logger = setup_logger("thinking")
 
 
+class SignalStrength:
+    """5-level signal strength (inspired by Aura)."""
+    STRONG_BUY = "STRONG_BUY"
+    BUY = "BUY"
+    HOLD = "HOLD"
+    SELL = "SELL"
+    STRONG_SELL = "STRONG_SELL"
+
+    @staticmethod
+    def from_score(score: float, n_supporting: int, n_contradicting: int) -> str:
+        """Classify signal strength based on score and confluence."""
+        confluence = n_supporting >= 5 and n_contradicting <= 2
+        if score > 0.5 and confluence:
+            return SignalStrength.STRONG_BUY
+        if score > 0.2:
+            return SignalStrength.BUY
+        if score < -0.5 and confluence:
+            return SignalStrength.STRONG_SELL
+        if score < -0.2:
+            return SignalStrength.SELL
+        return SignalStrength.HOLD
+
+
 @dataclass
 class MarketObservation:
     """Step 1: What is the market doing right now?"""
@@ -105,14 +128,31 @@ class ThinkingEngine:
         # Thinking parameters
         self.min_conviction = params.get("min_conviction", 0.4)
         self.min_edge_ratio = params.get("min_edge_ratio", 1.5)
+        self.sentiment_weight = params.get("sentiment_weight", 0.15)
+
+        # Sentiment agent
+        try:
+            from src.agents.scout import ScoutAgent
+            self._scout = ScoutAgent()
+        except Exception:
+            self._scout = None
+        self._cached_sentiment = {"score": 0.0, "tick": 0}
+
+        # Database for audit trail
+        try:
+            from src.core.database import TradingDatabase
+            self._db = TradingDatabase()
+        except Exception:
+            self._db = None
 
         # State
         self._regime_history: list[MarketRegime] = []
         self._reflections: list[TradeReflection] = []
-        self._pending_hypotheses: dict[str, Hypothesis] = {}  # trade_id -> hypothesis
+        self._pending_hypotheses: dict[str, Hypothesis] = {}
         self._accuracy_window = 20
         self._consecutive_losses = 0
-        self._recent_accuracy = 0.5  # start neutral
+        self._recent_accuracy = 0.5
+        self._tick = 0
 
     def _observe(self, df: pd.DataFrame, ind: dict) -> MarketObservation:
         """Step 1: Gather raw market observations."""
@@ -221,12 +261,21 @@ class ThinkingEngine:
                 short_weight += weight
 
         # Multi-timeframe context (use price changes as proxy)
-        if obs.price_change_20 > 0.03:  # 3%+ up over 20 candles
+        if obs.price_change_20 > 0.03:
             supporting_long.append("trend_20:bullish")
             long_weight += 0.3
         elif obs.price_change_20 < -0.03:
             supporting_short.append("trend_20:bearish")
             short_weight += 0.3
+
+        # Sentiment context (from Scout Agent)
+        sentiment = self._get_sentiment()
+        if sentiment > 0.15:
+            supporting_long.append(f"sentiment:+{sentiment:.2f}")
+            long_weight += sentiment * self.sentiment_weight * 3
+        elif sentiment < -0.15:
+            supporting_short.append(f"sentiment:{sentiment:.2f}")
+            short_weight += abs(sentiment) * self.sentiment_weight * 3
 
         # Regime context
         if ctx.regime == MarketRegime.TRENDING_UP:
@@ -387,8 +436,20 @@ class ThinkingEngine:
             f"accuracy={self._recent_accuracy:.0%} | {lesson[:80]}"
         )
 
+    def _get_sentiment(self) -> float:
+        """Get cached sentiment score (refreshes every 100 ticks)."""
+        if self._scout and (self._tick - self._cached_sentiment["tick"]) >= 100:
+            try:
+                symbol = self.config.get("trading", {}).get("symbol", "BTC/USDT")
+                result = self._scout.analyze(symbol)
+                self._cached_sentiment = {"score": result["score"], "tick": self._tick}
+            except Exception:
+                pass
+        return self._cached_sentiment["score"]
+
     def think(self, df: pd.DataFrame) -> TradeSignal:
-        """Main entry point: run the full thinking loop."""
+        """Main entry point: run the full OODA thinking loop."""
+        self._tick += 1
         ind = self.combiner.build_indicator_snapshot(df)
         if not ind:
             return TradeSignal(Signal.HOLD, 0.0, "Insufficient data")
@@ -402,14 +463,38 @@ class ThinkingEngine:
         # 3. HYPOTHESIZE
         hyp = self._hypothesize(df, ind, obs, ctx)
 
-        # 5. DECIDE (step 4 is implicit in hypothesis evaluation)
+        # 4. EVALUATE signal strength (5 levels, inspired by Aura)
+        strength = SignalStrength.from_score(
+            hyp.conviction * (1 if hyp.direction == "long" else -1),
+            len(hyp.supporting), len(hyp.contradicting),
+        )
+
+        # 5. DECIDE
         decision = self._decide(obs, ctx, hyp)
 
-        # Build TradeSignal
+        # Store hypothesis for reflection
         if decision.action == Signal.BUY:
-            # Store hypothesis for post-trade reflection
             trade_key = f"think_{len(self._reflections)}"
             self._pending_hypotheses[trade_key] = hyp
+
+        # Store signal in database (audit trail)
+        sentiment = self._cached_sentiment["score"]
+        if self._db and decision.action != Signal.HOLD:
+            try:
+                self._db.store_signal(
+                    ticker=self.config.get("trading", {}).get("symbol", "BTC/USDT"),
+                    action=decision.action.value,
+                    strength=strength,
+                    confidence=decision.confidence,
+                    regime=ctx.regime.value,
+                    reasoning=decision.reasoning[:500],
+                    sentiment=sentiment,
+                    alpha_score=hyp.conviction,
+                    active_signals=len(hyp.supporting) + len(hyp.contradicting),
+                    metadata={"thesis": hyp.thesis[:200], "edge_ratio": hyp.edge_ratio},
+                )
+            except Exception:
+                pass
 
         atr = ind.get("atr_14", 0)
         return TradeSignal(
@@ -419,12 +504,14 @@ class ThinkingEngine:
             entry_price=obs.price,
             metadata={
                 "regime": ctx.regime.value,
+                "strength": strength,
                 "conviction": hyp.conviction,
                 "edge_ratio": hyp.edge_ratio,
                 "supporting": len(hyp.supporting),
                 "contradicting": len(hyp.contradicting),
                 "accuracy": self._recent_accuracy,
                 "consecutive_losses": self._consecutive_losses,
+                "sentiment": sentiment,
                 "size_up": decision.should_size_up,
                 "size_down": decision.should_size_down,
                 "atr": atr,
