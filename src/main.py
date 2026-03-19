@@ -150,6 +150,12 @@ def main():
                         help="Open live dashboard in browser for visualization")
     args = parser.parse_args()
 
+    # --viz doesn't need config file
+    if args.viz:
+        from dashboard.server import start_server
+        start_server(open_browser=True)
+        return
+
     config = load_config(args.config)
 
     if args.strategy:
@@ -162,11 +168,6 @@ def main():
         log_file=log_cfg.get("file", "logs/trading.log"),
         console=log_cfg.get("console", True),
     )
-
-    if args.viz:
-        from dashboard.server import start_server
-        start_server(open_browser=True)
-        return
 
     if args.walk_forward:
         run_walk_forward(config)
