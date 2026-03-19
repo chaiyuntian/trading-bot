@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading Bot Dashboard</title>
+<script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+    background: #0a0a0f;
+    color: #e0e0e0;
+    overflow-x: hidden;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: #111118;
+    border-bottom: 1px solid #1e1e2e;
+  }
+  .header h1 { font-size: 16px; font-weight: 600; color: #fff; }
+  .header .status {
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: #1a1a2e;
+  }
+  .status.connected { color: #00e676; border: 1px solid #00e67644; }
+  .status.running { color: #ffab40; border: 1px solid #ffab4044; }
+  .status.done { color: #40c4ff; border: 1px solid #40c4ff44; }
+  .status.error { color: #ff5252; border: 1px solid #ff525244; }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    padding: 12px 20px;
+    background: #0e0e16;
+    border-bottom: 1px solid #1e1e2e;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .controls label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+  .controls select, .controls input, .controls button {
+    background: #1a1a2e;
+    border: 1px solid #2a2a3e;
+    color: #e0e0e0;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+  }
+  .controls button {
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .controls button:hover { background: #2a2a4e; }
+  .btn-start { color: #00e676; border-color: #00e67644; }
+  .btn-start:hover { background: #00e67622 !important; }
+
+  #chart-container {
+    width: 100%;
+    height: 420px;
+    background: #0a0a0f;
+  }
+
+  .dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: #1e1e2e;
+    border-top: 1px solid #1e1e2e;
+  }
+
+  .card {
+    background: #111118;
+    padding: 16px 20px;
+  }
+  .card-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #666;
+    margin-bottom: 8px;
+  }
+  .card-value {
+    font-size: 24px;
+    font-weight: 700;
+  }
+  .card-sub {
+    font-size: 11px;
+    color: #666;
+    margin-top: 4px;
+  }
+  .green { color: #00e676; }
+  .red { color: #ff5252; }
+  .blue { color: #40c4ff; }
+  .yellow { color: #ffab40; }
+  .white { color: #fff; }
+
+  .trade-log {
+    background: #111118;
+    border-top: 1px solid #1e1e2e;
+    padding: 12px 20px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .trade-log h3 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #666;
+    margin-bottom: 8px;
+  }
+  .trade-entry {
+    font-size: 11px;
+    padding: 3px 0;
+    border-bottom: 1px solid #1a1a2e;
+    display: flex;
+    justify-content: space-between;
+  }
+  .trade-entry .buy { color: #00e676; }
+  .trade-entry .sell { color: #ff5252; }
+  .trade-entry .close { color: #ffab40; }
+
+  .final-report {
+    background: #0e1a0e;
+    border: 1px solid #00e67622;
+    border-radius: 8px;
+    margin: 16px 20px;
+    padding: 20px;
+    display: none;
+  }
+  .final-report.show { display: block; }
+  .final-report h2 {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: #00e676;
+  }
+  .report-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  .report-item {
+    font-size: 12px;
+  }
+  .report-item .label { color: #666; }
+  .report-item .value { font-size: 18px; font-weight: 700; margin-top: 2px; }
+
+  .regime-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .regime-trending_up { background: #00e67622; color: #00e676; }
+  .regime-trending_down { background: #ff525222; color: #ff5252; }
+  .regime-ranging { background: #40c4ff22; color: #40c4ff; }
+  .regime-volatile { background: #ffab4022; color: #ffab40; }
+
+  .progress-bar {
+    height: 2px;
+    background: #1a1a2e;
+    width: 100%;
+  }
+  .progress-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00e676, #40c4ff);
+    width: 0%;
+    transition: width 0.3s;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Trading Bot Dashboard</h1>
+  <span class="status" id="status">Disconnected</span>
+</div>
+
+<div class="controls">
+  <div>
+    <label>Strategy</label><br>
+    <select id="strategy">
+      <option value="ensemble" selected>Ensemble (recommended)</option>
+      <option value="rsi_macd">RSI + MACD</option>
+      <option value="mean_reversion">Mean Reversion</option>
+      <option value="grid">Grid Trading</option>
+      <option value="dca_momentum">DCA Momentum</option>
+      <option value="kama_trend">KAMA Trend</option>
+    </select>
+  </div>
+  <div>
+    <label>Speed (ms/candle)</label><br>
+    <input type="range" id="speed" min="0" max="200" value="20" style="width:120px">
+    <span id="speed-label">20ms</span>
+  </div>
+  <div style="margin-left:auto">
+    <button class="btn-start" id="btn-start" onclick="startSim()">Start Simulation</button>
+  </div>
+</div>
+
+<div class="progress-bar"><div class="fill" id="progress"></div></div>
+
+<div id="chart-container"></div>
+
+<div class="dashboard">
+  <div class="card">
+    <div class="card-title">Equity</div>
+    <div class="card-value white" id="v-equity">$1,000.00</div>
+    <div class="card-sub" id="v-roi">ROI: 0.00%</div>
+  </div>
+  <div class="card">
+    <div class="card-title">PnL</div>
+    <div class="card-value" id="v-pnl">$0.00</div>
+    <div class="card-sub" id="v-pnl-sub">0 trades</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Win Rate</div>
+    <div class="card-value blue" id="v-winrate">0%</div>
+    <div class="card-sub" id="v-winrate-sub">0W / 0L</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Drawdown</div>
+    <div class="card-value" id="v-dd">0.00%</div>
+    <div class="card-sub" id="v-dd-sub">Open: 0</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Regime</div>
+    <div class="card-value"><span class="regime-badge regime-ranging" id="v-regime">ranging</span></div>
+    <div class="card-sub" id="v-signal">Signal: hold</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Price</div>
+    <div class="card-value white" id="v-price">$0.00</div>
+    <div class="card-sub" id="v-candle">Candle: 0</div>
+  </div>
+</div>
+
+<div class="trade-log" id="trade-log">
+  <h3>Trade Log</h3>
+  <div id="trades"></div>
+</div>
+
+<div class="final-report" id="final-report">
+  <h2>Simulation Complete</h2>
+  <div class="report-grid" id="report-grid"></div>
+</div>
+
+<script>
+let ws = null;
+let chart = null;
+let candleSeries = null;
+let markers = [];
+let equitySeries = null;
+let totalCandles = 0;
+const initialCapital = 1000;
+
+const speedSlider = document.getElementById('speed');
+const speedLabel = document.getElementById('speed-label');
+speedSlider.addEventListener('input', () => {
+  speedLabel.textContent = speedSlider.value + 'ms';
+});
+
+function setStatus(text, cls) {
+  const el = document.getElementById('status');
+  el.textContent = text;
+  el.className = 'status ' + cls;
+}
+
+function initChart() {
+  const container = document.getElementById('chart-container');
+  container.innerHTML = '';
+
+  chart = LightweightCharts.createChart(container, {
+    width: container.clientWidth,
+    height: 420,
+    layout: {
+      background: { color: '#0a0a0f' },
+      textColor: '#666',
+    },
+    grid: {
+      vertLines: { color: '#1a1a2e' },
+      horzLines: { color: '#1a1a2e' },
+    },
+    crosshair: {
+      mode: LightweightCharts.CrosshairMode.Normal,
+    },
+    rightPriceScale: {
+      borderColor: '#1e1e2e',
+    },
+    timeScale: {
+      borderColor: '#1e1e2e',
+      timeVisible: true,
+    },
+  });
+
+  candleSeries = chart.addCandlestickSeries({
+    upColor: '#00e676',
+    downColor: '#ff5252',
+    borderUpColor: '#00e676',
+    borderDownColor: '#ff5252',
+    wickUpColor: '#00e67688',
+    wickDownColor: '#ff525288',
+  });
+
+  window.addEventListener('resize', () => {
+    chart.applyOptions({ width: container.clientWidth });
+  });
+}
+
+function addTradeLog(action, price, pnl, time) {
+  const el = document.getElementById('trades');
+  const ts = new Date(time * 1000).toISOString().slice(0, 16).replace('T', ' ');
+  const cls = action === 'buy' ? 'buy' : (action === 'sell' ? 'sell' : 'close');
+  const pnlStr = pnl !== undefined ? ` | PnL: $${pnl.toFixed(2)}` : '';
+  const entry = document.createElement('div');
+  entry.className = 'trade-entry';
+  entry.innerHTML = `<span class="${cls}">${action.toUpperCase()} @ $${price.toFixed(2)}${pnlStr}</span><span style="color:#444">${ts}</span>`;
+  el.insertBefore(entry, el.firstChild);
+  // Keep only last 50
+  while (el.children.length > 50) el.removeChild(el.lastChild);
+}
+
+function showReport(stats) {
+  const el = document.getElementById('final-report');
+  const grid = document.getElementById('report-grid');
+  el.classList.add('show');
+
+  const items = [
+    ['Final Capital', `$${stats.final_capital.toFixed(2)}`, stats.total_pnl >= 0 ? 'green' : 'red'],
+    ['ROI', `${stats.roi_pct.toFixed(2)}%`, stats.roi_pct >= 0 ? 'green' : 'red'],
+    ['Total PnL', `$${stats.total_pnl.toFixed(2)}`, stats.total_pnl >= 0 ? 'green' : 'red'],
+    ['Total Trades', stats.total_trades, 'white'],
+    ['Win Rate', `${stats.win_rate.toFixed(1)}%`, stats.win_rate >= 50 ? 'green' : 'yellow'],
+    ['Wins / Losses', `${stats.wins} / ${stats.losses}`, 'white'],
+    ['Profit Factor', stats.profit_factor.toFixed(2), stats.profit_factor >= 1 ? 'green' : 'red'],
+    ['Sharpe Ratio', stats.sharpe_ratio.toFixed(2), stats.sharpe_ratio >= 1 ? 'green' : 'yellow'],
+    ['Sortino Ratio', stats.sortino_ratio.toFixed(2), stats.sortino_ratio >= 2 ? 'green' : 'yellow'],
+    ['Max Drawdown', `${stats.max_drawdown_pct.toFixed(2)}%`, stats.max_drawdown_pct < 10 ? 'green' : 'red'],
+  ];
+
+  grid.innerHTML = items.map(([label, value, color]) =>
+    `<div class="report-item"><div class="label">${label}</div><div class="value ${color}">${value}</div></div>`
+  ).join('');
+}
+
+function startSim() {
+  const strategy = document.getElementById('strategy').value;
+  const speed = parseInt(speedSlider.value);
+
+  document.getElementById('btn-start').disabled = true;
+  document.getElementById('btn-start').textContent = 'Running...';
+  document.getElementById('trades').innerHTML = '';
+  document.getElementById('final-report').classList.remove('show');
+  document.getElementById('progress').style.width = '0%';
+  markers = [];
+
+  initChart();
+  setStatus('Connecting...', 'running');
+
+  const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  ws = new WebSocket(`${protocol}//${location.host}/ws`);
+
+  ws.onopen = () => {
+    setStatus('Connected', 'connected');
+    ws.send(JSON.stringify({ strategy, speed }));
+  };
+
+  ws.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+
+    switch (msg.type) {
+      case 'status':
+        setStatus(msg.msg, 'running');
+        break;
+
+      case 'candles':
+        candleSeries.setData(msg.data);
+        break;
+
+      case 'sim_start':
+        totalCandles = msg.total;
+        setStatus('Simulating...', 'running');
+        break;
+
+      case 'update': {
+        const pct = (msg.candle_idx / totalCandles * 100);
+        document.getElementById('progress').style.width = pct + '%';
+        document.getElementById('v-price').textContent = '$' + msg.price.toLocaleString();
+        document.getElementById('v-equity').textContent = '$' + msg.equity.toLocaleString(undefined, {minimumFractionDigits:2});
+        document.getElementById('v-roi').textContent = 'ROI: ' + ((msg.equity / initialCapital - 1) * 100).toFixed(2) + '%';
+
+        const pnlEl = document.getElementById('v-pnl');
+        pnlEl.textContent = '$' + msg.total_pnl.toFixed(2);
+        pnlEl.className = 'card-value ' + (msg.total_pnl >= 0 ? 'green' : 'red');
+        document.getElementById('v-pnl-sub').textContent = msg.total_trades + ' trades';
+
+        document.getElementById('v-winrate').textContent = msg.win_rate + '%';
+
+        const ddEl = document.getElementById('v-dd');
+        ddEl.textContent = msg.drawdown.toFixed(2) + '%';
+        ddEl.className = 'card-value ' + (msg.drawdown < 5 ? 'green' : (msg.drawdown < 15 ? 'yellow' : 'red'));
+        document.getElementById('v-dd-sub').textContent = 'Open: ' + msg.open_trades;
+
+        const regimeEl = document.getElementById('v-regime');
+        regimeEl.textContent = msg.regime;
+        regimeEl.className = 'regime-badge regime-' + msg.regime;
+
+        const sigEl = document.getElementById('v-signal');
+        sigEl.textContent = 'Signal: ' + msg.signal;
+        sigEl.style.color = msg.signal === 'buy' ? '#00e676' : (msg.signal === 'sell' ? '#ff5252' : '#666');
+
+        document.getElementById('v-candle').textContent = 'Candle: ' + msg.candle_idx + '/' + totalCandles;
+        break;
+      }
+
+      case 'trade':
+        if (msg.action === 'buy') {
+          markers.push({
+            time: msg.time,
+            position: 'belowBar',
+            color: '#00e676',
+            shape: 'arrowUp',
+            text: 'BUY',
+          });
+          addTradeLog('buy', msg.price, undefined, msg.time);
+        } else if (msg.action === 'sell') {
+          markers.push({
+            time: msg.time,
+            position: 'aboveBar',
+            color: '#ff5252',
+            shape: 'arrowDown',
+            text: `SELL ${msg.pnl >= 0 ? '+' : ''}${msg.pnl.toFixed(2)}`,
+          });
+          addTradeLog('sell', msg.price, msg.pnl, msg.time);
+        } else if (msg.action === 'close') {
+          markers.push({
+            time: msg.time,
+            position: 'aboveBar',
+            color: msg.reason === 'take_profit' ? '#40c4ff' : '#ffab40',
+            shape: 'circle',
+            text: msg.reason === 'take_profit' ? 'TP' : 'SL',
+          });
+          addTradeLog(msg.reason, msg.price, msg.pnl, msg.time);
+        }
+        // Sort markers by time before setting (required by lightweight-charts)
+        markers.sort((a, b) => a.time - b.time);
+        candleSeries.setMarkers(markers);
+        break;
+
+      case 'done':
+        setStatus('Complete', 'done');
+        document.getElementById('progress').style.width = '100%';
+        document.getElementById('btn-start').disabled = false;
+        document.getElementById('btn-start').textContent = 'Start Simulation';
+        showReport(msg.stats);
+        break;
+
+      case 'error':
+        setStatus('Error: ' + msg.msg, 'error');
+        document.getElementById('btn-start').disabled = false;
+        document.getElementById('btn-start').textContent = 'Start Simulation';
+        break;
+    }
+  };
+
+  ws.onerror = () => setStatus('Connection error', 'error');
+  ws.onclose = () => {
+    document.getElementById('btn-start').disabled = false;
+    document.getElementById('btn-start').textContent = 'Start Simulation';
+  };
+}
+
+// Init empty chart
+initChart();
+</script>
+</body>
+</html>

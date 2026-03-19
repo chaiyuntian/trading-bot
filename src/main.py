@@ -144,6 +144,8 @@ def main():
                         help="Run walk-forward validation (detect overfitting)")
     parser.add_argument("--strategy", type=str, default=None,
                         help="Override strategy name")
+    parser.add_argument("--async", dest="use_async", action="store_true",
+                        help="Use async WebSocket bot (lowest latency)")
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -194,8 +196,14 @@ def main():
                 print("  Aborted.")
                 return
 
-        bot = TradingBot(config)
-        bot.start()
+        if args.use_async:
+            import asyncio
+            from src.bot_async import AsyncTradingBot
+            bot = AsyncTradingBot(config)
+            asyncio.run(bot.start())
+        else:
+            bot = TradingBot(config)
+            bot.start()
 
 
 if __name__ == "__main__":

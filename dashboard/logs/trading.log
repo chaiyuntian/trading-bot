@@ -1,0 +1,439 @@
+2026-03-19 09:23:46 | INFO     | strategy.grid | Grid built: 11 levels, range 42481.82 - 42869.09, spacing=38.73
+2026-03-19 09:23:46 | INFO     | strategy.grid | Grid BUY at level 42598.00
+2026-03-19 09:23:46 | INFO     | strategy.kama_trend | BUY signal | KAMA=42668.43 ER=0.10 slope=0.003 RSI=53.7 Score=7
+2026-03-19 09:23:46 | INFO     | strategy.rsi_macd | BUY signal | RSI=64.6 MACD_h=0.8960 Price=42845.96 EMA=42575.56 Score=7
+2026-03-19 09:23:46 | INFO     | strategy.grid | Grid SELL at level 42791.64
+2026-03-19 09:23:46 | INFO     | strategy.kama_trend | BUY signal | KAMA=42680.25 ER=0.32 slope=0.130 RSI=64.6 Score=7
+2026-03-19 09:23:46 | INFO     | strategy.grid | Grid SELL at level 42714.18
+2026-03-19 09:23:46 | INFO     | strategy.ensemble | Regime change: ranging -> trending_up
+2026-03-19 09:23:46 | INFO     | strategy.grid | Grid SELL at level 42830.36
+2026-03-19 09:23:46 | INFO     | strategy.kama_trend | BUY signal | KAMA=42687.27 ER=0.19 slope=0.054 RSI=62.1 Score=5
+2026-03-19 09:23:46 | INFO     | strategy.ensemble | Regime change: trending_up -> ranging
+2026-03-19 09:23:46 | INFO     | strategy.grid | Grid SELL at level 42752.91
+2026-03-19 09:23:46 | INFO     | strategy.kama_trend | BUY signal | KAMA=42690.70 ER=0.21 slope=0.033 RSI=56.0 Score=5
+2026-03-19 09:23:47 | INFO     | strategy.kama_trend | BUY signal | KAMA=42694.53 ER=0.20 slope=0.031 RSI=55.6 Score=5
+2026-03-19 09:23:47 | INFO     | strategy.grid | Grid SELL at level 42869.09
+2026-03-19 09:23:47 | INFO     | strategy.kama_trend | BUY signal | KAMA=42700.03 ER=0.19 slope=0.043 RSI=57.5 Score=5
+2026-03-19 09:23:47 | INFO     | strategy.rsi_macd | BUY signal | RSI=70.2 MACD_h=19.6716 Price=43104.16 EMA=42651.55 Score=7
+2026-03-19 09:23:47 | INFO     | strategy.mean_reversion | SELL signal | Price=43104.16 BB_upper=42961.40 RSI=70.2
+2026-03-19 09:23:47 | INFO     | strategy.grid | Grid built: 11 levels, range 42486.12 - 43002.15, spacing=51.60
+2026-03-19 09:23:47 | INFO     | strategy.kama_trend | BUY signal | KAMA=42726.55 ER=0.32 slope=0.257 RSI=70.2 Score=6
+2026-03-19 09:23:47 | INFO     | strategy.mean_reversion | SELL signal | Price=43063.05 BB_upper=43020.66 RSI=67.2
+2026-03-19 09:23:47 | INFO     | strategy.grid | Grid built: 11 levels, range 42490.62 - 43032.23, spacing=54.16
+2026-03-19 09:23:47 | INFO     | strategy.kama_trend | BUY signal | KAMA=42752.57 ER=0.35 slope=0.240 RSI=67.2 Score=5
+2026-03-19 09:23:47 | INFO     | strategy.ensemble | Regime change: ranging -> trending_up
+2026-03-19 09:23:47 | INFO     | strategy.mean_reversion | SELL signal | Price=43152.11 BB_upper=43094.19 RSI=70.2
+2026-03-19 09:23:47 | INFO     | strategy.grid | Grid built: 11 levels, range 42505.13 - 43058.86, spacing=55.37
+2026-03-19 09:23:47 | INFO     | strategy.kama_trend | BUY signal | KAMA=42786.96 ER=0.38 slope=0.311 RSI=70.2 Score=6
+2026-03-19 09:23:47 | INFO     | strategy.grid | Grid built: 11 levels, range 42525.98 - 43077.56, spacing=55.16
+2026-03-19 09:23:47 | INFO     | strategy.kama_trend | BUY signal | KAMA=42833.19 ER=0.52 slope=0.419 RSI=67.1 Score=6
+2026-03-19 09:23:48 | INFO     | strategy.grid | Grid built: 11 levels, range 42557.03 - 43099.78, spacing=54.27
+2026-03-19 09:23:48 | INFO     | strategy.kama_trend | BUY signal | KAMA=42884.23 ER=0.53 slope=0.470 RSI=69.5 Score=6
+2026-03-19 09:23:48 | INFO     | strategy.grid | Grid built: 11 levels, range 42578.11 - 43142.80, spacing=56.47
+2026-03-19 09:23:48 | INFO     | strategy.kama_trend | BUY signal | KAMA=42968.25 ER=0.68 slope=0.744 RSI=72.1 Score=6
+2026-03-19 09:23:48 | INFO     | strategy.mean_reversion | SELL signal | Price=43395.09 BB_upper=43356.78 RSI=75.8
+2026-03-19 09:23:48 | INFO     | strategy.grid | Grid built: 11 levels, range 42604.43 - 43191.33, spacing=58.69
+2026-03-19 09:23:48 | INFO     | strategy.kama_trend | BUY signal | KAMA=43070.57 ER=0.71 slope=0.872 RSI=75.8 Score=6
+2026-03-19 09:23:48 | INFO     | strategy.mean_reversion | SELL signal | Price=43517.99 BB_upper=43458.66 RSI=78.6
+2026-03-19 09:23:48 | INFO     | strategy.grid | Grid built: 11 levels, range 42643.01 - 43243.32, spacing=60.03
+2026-03-19 09:23:48 | INFO     | strategy.kama_trend | BUY signal | KAMA=43212.20 ER=0.83 slope=1.180 RSI=78.6 Score=6
+2026-03-19 09:23:48 | INFO     | strategy.mean_reversion | SELL signal | Price=43643.98 BB_upper=43576.50 RSI=81.0
+2026-03-19 09:23:48 | INFO     | strategy.grid | Grid built: 11 levels, range 42670.15 - 43315.58, spacing=64.54
+2026-03-19 09:23:48 | INFO     | strategy.kama_trend | BUY signal | KAMA=43354.88 ER=0.85 slope=1.105 RSI=81.0 Score=6
+2026-03-19 09:23:48 | INFO     | strategy.mean_reversion | SELL signal | Price=43699.56 BB_upper=43687.67 RSI=81.9
+2026-03-19 09:23:48 | INFO     | strategy.grid | Grid built: 11 levels, range 42715.83 - 43371.53, spacing=65.57
+2026-03-19 09:23:48 | INFO     | strategy.kama_trend | BUY signal | KAMA=43467.88 ER=0.84 slope=0.862 RSI=81.9 Score=5
+2026-03-19 09:23:48 | INFO     | strategy.grid | Grid built: 11 levels, range 42757.74 - 43425.03, spacing=66.73
+2026-03-19 09:23:48 | INFO     | strategy.kama_trend | BUY signal | KAMA=43568.96 ER=0.81 slope=0.757 RSI=83.6 Score=5
+2026-03-19 09:23:48 | INFO     | strategy.rsi_macd | SELL signal | RSI=75.4 MACD_h=68.2068 Price=43687.86 EMA=42932.83 Score=5
+2026-03-19 09:23:48 | INFO     | strategy.grid | Grid built: 11 levels, range 42794.32 - 43478.93, spacing=68.46
+2026-03-19 09:23:48 | INFO     | strategy.kama_trend | BUY signal | KAMA=43595.07 ER=0.67 slope=0.191 RSI=75.4 Score=5
+2026-03-19 09:23:48 | INFO     | strategy.grid | Grid built: 11 levels, range 42848.21 - 43513.52, spacing=66.53
+2026-03-19 09:23:48 | INFO     | strategy.kama_trend | BUY signal | KAMA=43622.09 ER=0.65 slope=0.203 RSI=76.2 Score=6
+2026-03-19 09:23:48 | INFO     | strategy.rsi_macd | SELL signal | RSI=71.5 MACD_h=43.3377 Price=43656.15 EMA=42991.02 Score=5
+2026-03-19 09:23:48 | INFO     | strategy.grid | Grid built: 11 levels, range 42889.95 - 43565.09, spacing=67.51
+2026-03-19 09:23:48 | INFO     | strategy.kama_trend | BUY signal | KAMA=43628.29 ER=0.60 slope=0.046 RSI=71.5 Score=5
+2026-03-19 09:23:48 | INFO     | strategy.grid | Grid SELL at level 43430.06
+2026-03-19 09:23:48 | INFO     | strategy.kama_trend | SELL signal | KAMA=43619.56 ER=0.30 slope=-0.063 RSI=61.1 Score=7
+2026-03-19 09:23:49 | INFO     | strategy.grid | Grid built: 11 levels, range 42962.76 - 43652.50, spacing=68.97
+2026-03-19 09:23:49 | INFO     | strategy.grid | Grid SELL at level 43445.58
+2026-03-19 09:23:49 | INFO     | strategy.grid | Grid SELL at level 43514.55
+2026-03-19 09:23:49 | INFO     | strategy.grid | Grid SELL at level 43376.61
+2026-03-19 09:23:49 | INFO     | strategy.ensemble | Regime change: trending_up -> ranging
+2026-03-19 09:23:49 | INFO     | strategy.grid | Grid SELL at level 43583.53
+2026-03-19 09:23:49 | INFO     | strategy.ensemble | Regime change: ranging -> trending_up
+2026-03-19 09:23:49 | INFO     | strategy.grid | Grid built: 11 levels, range 43139.58 - 43824.12, spacing=68.45
+2026-03-19 09:23:49 | INFO     | strategy.kama_trend | BUY signal | KAMA=43608.20 ER=0.14 slope=0.011 RSI=64.5 Score=8
+2026-03-19 09:23:49 | INFO     | strategy.mean_reversion | SELL signal | Price=43989.99 BB_upper=43981.79 RSI=72.3
+2026-03-19 09:23:49 | INFO     | strategy.grid | Grid built: 11 levels, range 43144.31 - 43912.09, spacing=76.78
+2026-03-19 09:23:49 | INFO     | strategy.rsi_macd | BUY signal | RSI=74.1 MACD_h=18.1444 Price=44084.87 EMA=43194.61 Score=7
+2026-03-19 09:23:49 | INFO     | strategy.mean_reversion | SELL signal | Price=44084.87 BB_upper=44056.55 RSI=74.1
+2026-03-19 09:23:49 | INFO     | strategy.grid | Grid built: 11 levels, range 43187.96 - 43961.72, spacing=77.38
+2026-03-19 09:23:49 | INFO     | strategy.kama_trend | BUY signal | KAMA=43655.65 ER=0.30 slope=0.181 RSI=74.1 Score=6
+2026-03-19 09:23:49 | INFO     | strategy.mean_reversion | SELL signal | Price=44179.55 BB_upper=44129.99 RSI=75.8
+2026-03-19 09:23:49 | INFO     | strategy.grid | Grid built: 11 levels, range 43244.18 - 44012.35, spacing=76.82
+2026-03-19 09:23:49 | INFO     | strategy.kama_trend | BUY signal | KAMA=43710.80 ER=0.43 slope=0.359 RSI=75.8 Score=6
+2026-03-19 09:23:49 | INFO     | strategy.mean_reversion | SELL signal | Price=44630.09 BB_upper=44332.07 RSI=82.0
+2026-03-19 09:23:49 | INFO     | strategy.grid | Grid built: 11 levels, range 43254.55 - 44147.01, spacing=89.25
+2026-03-19 09:23:49 | INFO     | strategy.kama_trend | BUY signal | KAMA=43966.68 ER=0.77 slope=1.434 RSI=82.0 Score=6
+2026-03-19 09:23:49 | INFO     | strategy.mean_reversion | SELL signal | Price=44609.79 BB_upper=44484.30 RSI=81.0
+2026-03-19 09:23:49 | INFO     | strategy.grid | Grid built: 11 levels, range 43283.45 - 44252.89, spacing=96.94
+2026-03-19 09:23:49 | INFO     | strategy.kama_trend | BUY signal | KAMA=44126.28 ER=0.72 slope=0.823 RSI=81.0 Score=5
+2026-03-19 09:23:49 | INFO     | strategy.mean_reversion | SELL signal | Price=44732.01 BB_upper=44647.60 RSI=82.4
+2026-03-19 09:23:49 | INFO     | strategy.grid | Grid built: 11 levels, range 43346.64 - 44323.39, spacing=97.67
+2026-03-19 09:23:49 | INFO     | strategy.kama_trend | BUY signal | KAMA=44335.13 ER=0.87 slope=1.069 RSI=82.4 Score=6
+2026-03-19 09:23:49 | INFO     | strategy.mean_reversion | SELL signal | Price=45056.00 BB_upper=44875.29 RSI=85.4
+2026-03-19 09:23:49 | INFO     | strategy.grid | Grid built: 11 levels, range 43365.11 - 44458.72, spacing=109.36
+2026-03-19 09:23:50 | INFO     | strategy.kama_trend | BUY signal | KAMA=44625.58 ER=0.95 slope=1.328 RSI=85.4 Score=6
+2026-03-19 09:23:50 | INFO     | strategy.rsi_macd | SELL signal | RSI=76.0 MACD_h=104.1969 Price=44841.22 EMA=43513.78 Score=5
+2026-03-19 09:23:50 | INFO     | strategy.grid | Grid built: 11 levels, range 43369.11 - 44574.45, spacing=120.53
+2026-03-19 09:23:50 | INFO     | strategy.kama_trend | BUY signal | KAMA=44682.73 ER=0.75 slope=0.237 RSI=76.0 Score=5
+2026-03-19 09:23:50 | INFO     | strategy.grid | Grid built: 11 levels, range 43432.98 - 44633.65, spacing=120.07
+2026-03-19 09:23:50 | INFO     | strategy.kama_trend | BUY signal | KAMA=44748.46 ER=0.75 slope=0.274 RSI=77.1 Score=6
+2026-03-19 09:23:50 | INFO     | strategy.rsi_macd | SELL signal | RSI=72.1 MACD_h=73.5511 Price=44806.64 EMA=43617.85 Score=5
+2026-03-19 09:23:50 | INFO     | strategy.grid | Grid built: 11 levels, range 43488.61 - 44678.68, spacing=119.01
+2026-03-19 09:23:50 | INFO     | strategy.kama_trend | SELL signal | KAMA=44759.38 ER=0.61 slope=0.046 RSI=72.1 Score=4
+2026-03-19 09:23:50 | INFO     | strategy.grid | Grid built: 11 levels, range 43549.87 - 44734.23, spacing=118.44
+2026-03-19 09:23:50 | INFO     | strategy.kama_trend | BUY signal | KAMA=44774.36 ER=0.55 slope=0.063 RSI=72.9 Score=5
+2026-03-19 09:23:50 | INFO     | strategy.grid | Grid built: 11 levels, range 43630.29 - 44779.39, spacing=114.91
+2026-03-19 09:23:50 | INFO     | strategy.kama_trend | BUY signal | KAMA=44807.13 ER=0.56 slope=0.143 RSI=74.7 Score=5
+2026-03-19 09:23:50 | INFO     | strategy.grid | Grid built: 11 levels, range 43706.92 - 44847.14, spacing=114.02
+2026-03-19 09:23:50 | INFO     | strategy.kama_trend | BUY signal | KAMA=44854.67 ER=0.56 slope=0.208 RSI=76.4 Score=6
+2026-03-19 09:23:50 | INFO     | strategy.grid | Grid built: 11 levels, range 43788.89 - 44946.27, spacing=115.74
+2026-03-19 09:23:50 | INFO     | strategy.kama_trend | BUY signal | KAMA=44909.86 ER=0.48 slope=0.238 RSI=78.9 Score=6
+2026-03-19 09:23:50 | INFO     | strategy.grid | Grid built: 11 levels, range 43879.81 - 45031.33, spacing=115.15
+2026-03-19 09:23:50 | INFO     | strategy.kama_trend | BUY signal | KAMA=44979.33 ER=0.53 slope=0.302 RSI=79.9 Score=5
+2026-03-19 09:23:50 | INFO     | strategy.rsi_macd | SELL signal | RSI=74.2 MACD_h=33.9427 Price=45250.45 EMA=43945.76 Score=5
+2026-03-19 09:23:50 | INFO     | strategy.grid | Grid built: 11 levels, range 43947.09 - 45137.19, spacing=119.01
+2026-03-19 09:23:51 | INFO     | strategy.kama_trend | SELL signal | KAMA=45000.51 ER=0.36 slope=0.089 RSI=74.2 Score=4
+2026-03-19 09:23:51 | INFO     | strategy.grid | Grid built: 11 levels, range 44050.94 - 45217.90, spacing=116.70
+2026-03-19 09:23:51 | INFO     | strategy.grid | Grid built: 11 levels, range 44157.62 - 45308.33, spacing=115.07
+2026-03-19 09:23:51 | INFO     | strategy.kama_trend | BUY signal | KAMA=45072.99 ER=0.53 slope=0.262 RSI=76.6 Score=5
+2026-03-19 09:23:51 | INFO     | strategy.rsi_macd | SELL signal | RSI=75.9 MACD_h=9.6207 Price=45402.38 EMA=44107.99 Score=5
+2026-03-19 09:23:51 | INFO     | strategy.grid | Grid built: 11 levels, range 44270.87 - 45382.32, spacing=111.14
+2026-03-19 09:23:51 | INFO     | strategy.kama_trend | SELL signal | KAMA=45112.57 ER=0.47 slope=0.178 RSI=75.9 Score=4
+2026-03-19 09:23:51 | INFO     | strategy.rsi_macd | SELL signal | RSI=75.3 MACD_h=-1.5355 Price=45390.00 EMA=44158.26 Score=8
+2026-03-19 09:23:51 | INFO     | strategy.grid | Grid built: 11 levels, range 44355.55 - 45469.25, spacing=111.37
+2026-03-19 09:23:51 | INFO     | strategy.dca_momentum | DCA SELL (profit) | RSI=75.3 EMA_dist=+2.79% MACD_h=-1.5355
+2026-03-19 09:23:51 | INFO     | strategy.kama_trend | BUY signal | KAMA=45170.35 ER=0.65 slope=0.259 RSI=75.3 Score=5
+2026-03-19 09:23:51 | INFO     | strategy.rsi_macd | SELL signal | RSI=73.8 MACD_h=-14.2920 Price=45362.27 EMA=44205.48 Score=5
+2026-03-19 09:23:51 | INFO     | strategy.grid | Grid SELL at level 45357.88
+2026-03-19 09:23:51 | INFO     | strategy.dca_momentum | DCA SELL (profit) | RSI=73.8 EMA_dist=+2.62% MACD_h=-14.2920
+2026-03-19 09:23:51 | INFO     | strategy.kama_trend | SELL signal | KAMA=45203.09 ER=0.58 slope=0.152 RSI=73.8 Score=4
+2026-03-19 09:23:51 | INFO     | strategy.ensemble | ENSEMBLE SELL | consensus=0.51 | Regime=trending_up | rsi_macd:SELL(0.6)*0.72 grid:SELL(0.6)*0.35 dca_momentum:SELL(0.7)*0.78 kama_trend:SELL(0.4)*0.84
+2026-03-19 09:23:51 | INFO     | strategy.rsi_macd | SELL signal | RSI=66.9 MACD_h=-34.3467 Price=45224.91 EMA=44245.46 Score=5
+2026-03-19 09:23:51 | INFO     | strategy.grid | Grid SELL at level 45135.14
+2026-03-19 09:23:51 | INFO     | strategy.grid | Grid SELL at level 45246.51
+2026-03-19 09:23:51 | INFO     | strategy.kama_trend | SELL signal | KAMA=45203.87 ER=0.10 slope=-0.002 RSI=64.8 Score=6
+2026-03-19 09:23:51 | INFO     | strategy.kama_trend | BUY signal | KAMA=45204.58 ER=0.03 slope=0.003 RSI=68.1 Score=6
+2026-03-19 09:23:51 | INFO     | strategy.kama_trend | SELL signal | KAMA=45205.19 ER=0.23 slope=-0.006 RSI=61.3 Score=6
+2026-03-19 09:23:51 | INFO     | strategy.kama_trend | BUY signal | KAMA=45207.42 ER=0.31 slope=0.012 RSI=63.2 Score=9
+2026-03-19 09:23:52 | INFO     | strategy.kama_trend | SELL signal | KAMA=45209.51 ER=0.28 slope=-0.014 RSI=58.0 Score=6
+2026-03-19 09:23:52 | INFO     | strategy.kama_trend | BUY signal | KAMA=45212.81 ER=0.16 slope=0.019 RSI=63.7 Score=8
+2026-03-19 09:23:52 | INFO     | strategy.grid | Grid SELL at level 45469.25
+2026-03-19 09:23:52 | INFO     | strategy.kama_trend | BUY signal | KAMA=45231.65 ER=0.35 slope=0.103 RSI=67.1 Score=6
+2026-03-19 09:23:52 | INFO     | strategy.mean_reversion | SELL signal | Price=45526.42 BB_upper=45507.32 RSI=68.8
+2026-03-19 09:23:52 | INFO     | strategy.grid | Grid built: 11 levels, range 44840.11 - 45780.70, spacing=94.06
+2026-03-19 09:23:52 | INFO     | strategy.grid | Grid SELL at level 45404.46
+2026-03-19 09:23:52 | INFO     | strategy.mean_reversion | SELL signal | Price=45646.38 BB_upper=45584.78 RSI=69.8
+2026-03-19 09:23:52 | INFO     | strategy.grid | Grid SELL at level 45592.58
+2026-03-19 09:23:52 | INFO     | strategy.kama_trend | BUY signal | KAMA=45298.58 ER=0.43 slope=0.208 RSI=69.8 Score=6
+2026-03-19 09:23:52 | INFO     | strategy.mean_reversion | SELL signal | Price=45748.52 BB_upper=45667.10 RSI=72.1
+2026-03-19 09:23:52 | INFO     | strategy.grid | Grid SELL at level 45686.64
+2026-03-19 09:23:52 | INFO     | strategy.kama_trend | BUY signal | KAMA=45378.03 ER=0.59 slope=0.403 RSI=72.1 Score=6
+2026-03-19 09:23:52 | INFO     | strategy.kama_trend | BUY signal | KAMA=45408.87 ER=0.43 slope=0.155 RSI=67.8 Score=5
+2026-03-19 09:23:52 | INFO     | strategy.rsi_macd | BUY signal | RSI=70.0 MACD_h=2.6090 Price=45759.30 EMA=44830.69 Score=7
+2026-03-19 09:23:52 | INFO     | strategy.grid | Grid SELL at level 45780.70
+2026-03-19 09:23:52 | INFO     | strategy.kama_trend | BUY signal | KAMA=45452.37 ER=0.48 slope=0.216 RSI=70.0 Score=6
+2026-03-19 09:23:52 | INFO     | strategy.rsi_macd | SELL signal | RSI=66.3 MACD_h=-0.9213 Price=45691.10 EMA=44864.43 Score=5
+2026-03-19 09:23:52 | INFO     | strategy.kama_trend | BUY signal | KAMA=45471.58 ER=0.36 slope=0.095 RSI=66.3 Score=5
+2026-03-19 09:23:53 | INFO     | strategy.rsi_macd | BUY signal | RSI=69.8 MACD_h=3.7212 Price=45831.12 EMA=44902.34 Score=7
+2026-03-19 09:23:53 | INFO     | strategy.grid | Grid built: 11 levels, range 44920.88 - 45928.01, spacing=100.71
+2026-03-19 09:23:53 | INFO     | strategy.kama_trend | BUY signal | KAMA=45536.94 ER=0.60 slope=0.324 RSI=69.8 Score=6
+2026-03-19 09:23:53 | INFO     | strategy.grid | Grid SELL at level 45625.87
+2026-03-19 09:23:53 | INFO     | strategy.grid | Grid SELL at level 45726.58
+2026-03-19 09:23:53 | INFO     | strategy.grid | Grid SELL at level 45525.16
+2026-03-19 09:23:53 | INFO     | strategy.ensemble | Regime change: trending_up -> ranging
+2026-03-19 09:23:53 | INFO     | strategy.kama_trend | BUY signal | KAMA=45558.03 ER=0.23 slope=0.006 RSI=56.9 Score=5
+2026-03-19 09:23:53 | INFO     | strategy.kama_trend | SELL signal | KAMA=45551.70 ER=0.43 slope=-0.037 RSI=52.2 Score=7
+2026-03-19 09:23:53 | INFO     | strategy.grid | Grid BUY at level 45223.02
+2026-03-19 09:23:53 | INFO     | strategy.kama_trend | SELL signal | KAMA=45502.50 ER=0.56 slope=-0.264 RSI=41.5 Score=4
+2026-03-19 09:23:54 | INFO     | strategy.kama_trend | BUY signal | KAMA=45494.21 ER=0.47 slope=-0.044 RSI=49.8 Score=5
+2026-03-19 09:23:54 | INFO     | strategy.ensemble | Regime change: ranging -> trending_down
+2026-03-19 09:23:54 | INFO     | strategy.grid | Grid BUY at level 45323.73
+2026-03-19 09:23:54 | INFO     | strategy.kama_trend | SELL signal | KAMA=45483.57 ER=0.39 slope=-0.058 RSI=47.6 Score=4
+2026-03-19 09:23:54 | INFO     | strategy.ensemble | Regime change: trending_down -> ranging
+2026-03-19 09:23:54 | INFO     | strategy.kama_trend | BUY signal | KAMA=45480.11 ER=0.30 slope=-0.009 RSI=50.9 Score=5
+2026-03-19 09:23:54 | INFO     | strategy.kama_trend | SELL signal | KAMA=45464.22 ER=0.39 slope=-0.087 RSI=44.6 Score=4
+2026-03-19 09:23:54 | INFO     | strategy.kama_trend | BUY signal | KAMA=45464.37 ER=0.11 slope=0.001 RSI=51.7 Score=7
+2026-03-19 09:23:54 | INFO     | strategy.kama_trend | BUY signal | KAMA=45464.96 ER=0.06 slope=0.003 RSI=53.7 Score=5
+2026-03-19 09:23:54 | INFO     | strategy.kama_trend | BUY signal | KAMA=45467.71 ER=0.09 slope=0.015 RSI=58.4 Score=5
+2026-03-19 09:23:54 | INFO     | strategy.kama_trend | BUY signal | KAMA=45471.09 ER=0.13 slope=0.018 RSI=57.3 Score=5
+2026-03-19 09:23:54 | INFO     | strategy.ensemble | Regime change: ranging -> trending_up
+2026-03-19 09:23:54 | INFO     | strategy.rsi_macd | BUY signal | RSI=61.6 MACD_h=7.6259 Price=45768.77 EMA=45239.70 Score=7
+2026-03-19 09:23:54 | INFO     | strategy.grid | Grid SELL at level 45827.29
+2026-03-19 09:23:54 | INFO     | strategy.kama_trend | BUY signal | KAMA=45514.22 ER=0.52 slope=0.236 RSI=61.6 Score=7
+2026-03-19 09:23:54 | INFO     | strategy.ensemble | Regime change: trending_up -> ranging
+2026-03-19 09:23:54 | INFO     | strategy.kama_trend | SELL signal | KAMA=45512.27 ER=0.16 slope=-0.030 RSI=42.1 Score=6
+2026-03-19 09:23:54 | INFO     | strategy.ensemble | Regime change: ranging -> trending_down
+2026-03-19 09:23:54 | INFO     | strategy.grid | Grid BUY at level 45021.59
+2026-03-19 09:23:55 | INFO     | strategy.grid | Grid built: 11 levels, range 44874.99 - 46032.84, spacing=115.78
+2026-03-19 09:23:55 | INFO     | strategy.grid | Grid BUY at level 45222.35
+2026-03-19 09:23:55 | INFO     | strategy.grid | Grid BUY at level 45106.56
+2026-03-19 09:23:55 | INFO     | strategy.dca_momentum | DCA BUY #1 | RSI=43.3 Price=45184.82 EMA=45247.94 (-0.14%)
+2026-03-19 09:23:55 | INFO     | strategy.kama_trend | SELL signal | KAMA=45418.25 ER=0.41 slope=-0.154 RSI=40.6 Score=4
+2026-03-19 09:23:55 | INFO     | strategy.kama_trend | BUY signal | KAMA=45404.37 ER=0.30 slope=-0.057 RSI=44.5 Score=5
+2026-03-19 09:23:55 | INFO     | strategy.kama_trend | SELL signal | KAMA=45389.91 ER=0.38 slope=-0.061 RSI=46.1 Score=4
+2026-03-19 09:23:55 | INFO     | strategy.grid | Grid BUY at level 45338.13
+2026-03-19 09:23:55 | INFO     | strategy.ensemble | Regime change: trending_down -> ranging
+2026-03-19 09:23:55 | INFO     | strategy.grid | Grid BUY at level 44990.78
+2026-03-19 09:23:55 | INFO     | strategy.ensemble | Regime change: ranging -> trending_down
+2026-03-19 09:23:56 | INFO     | strategy.ensemble | Regime change: trending_down -> ranging
+2026-03-19 09:23:56 | INFO     | strategy.ensemble | Regime change: ranging -> trending_down
+2026-03-19 09:23:56 | INFO     | strategy.grid | Grid built: 11 levels, range 44604.77 - 45703.44, spacing=109.87
+2026-03-19 09:23:56 | INFO     | strategy.kama_trend | SELL signal | KAMA=45283.11 ER=0.51 slope=-0.293 RSI=38.0 Score=4
+2026-03-19 09:23:56 | INFO     | strategy.grid | Grid BUY at level 44934.37
+2026-03-19 09:23:56 | INFO     | strategy.kama_trend | BUY signal | KAMA=45263.19 ER=0.30 slope=-0.089 RSI=41.6 Score=5
+2026-03-19 09:23:56 | INFO     | strategy.grid | Grid BUY at level 45044.24
+2026-03-19 09:23:56 | INFO     | strategy.dca_momentum | DCA BUY #2 | RSI=44.8 Price=45039.49 EMA=45175.26 (-0.30%)
+2026-03-19 09:23:56 | INFO     | strategy.rsi_macd | SELL signal | RSI=42.4 MACD_h=-2.3203 Price=44954.41 EMA=45163.52 Score=6
+2026-03-19 09:23:56 | INFO     | strategy.grid | Grid BUY at level 44824.51
+2026-03-19 09:23:56 | INFO     | strategy.grid | Grid BUY at level 44714.64
+2026-03-19 09:23:57 | INFO     | strategy.kama_trend | SELL signal | KAMA=45204.07 ER=0.36 slope=-0.163 RSI=37.6 Score=4
+2026-03-19 09:23:57 | INFO     | strategy.kama_trend | SELL signal | KAMA=45153.48 ER=0.39 slope=-0.156 RSI=39.0 Score=4
+2026-03-19 09:23:57 | INFO     | strategy.ensemble | Regime change: trending_down -> ranging
+2026-03-19 09:23:57 | INFO     | strategy.rsi_macd | BUY signal | RSI=52.1 MACD_h=13.5859 Price=45119.74 EMA=45106.24 Score=7
+2026-03-19 09:23:57 | INFO     | strategy.kama_trend | BUY signal | KAMA=45146.30 ER=0.22 slope=0.001 RSI=53.3 Score=8
+2026-03-19 09:23:57 | INFO     | strategy.kama_trend | SELL signal | KAMA=45145.76 ER=0.02 slope=-0.002 RSI=49.6 Score=6
+2026-03-19 09:23:58 | INFO     | strategy.kama_trend | BUY signal | KAMA=45105.90 ER=0.01 slope=0.001 RSI=54.8 Score=8
+2026-03-19 09:23:58 | INFO     | strategy.kama_trend | BUY signal | KAMA=45106.29 ER=0.08 slope=0.002 RSI=54.3 Score=5
+2026-03-19 09:23:58 | INFO     | strategy.grid | Grid SELL at level 45263.97
+2026-03-19 09:23:58 | INFO     | strategy.kama_trend | BUY signal | KAMA=45111.26 ER=0.32 slope=0.027 RSI=56.0 Score=6
+2026-03-19 09:23:58 | INFO     | strategy.kama_trend | BUY signal | KAMA=45121.30 ER=0.30 slope=0.045 RSI=58.0 Score=6
+2026-03-19 09:23:58 | INFO     | strategy.grid | Grid SELL at level 45373.84
+2026-03-19 09:23:58 | INFO     | strategy.kama_trend | BUY signal | KAMA=45138.79 ER=0.39 slope=0.102 RSI=60.7 Score=7
+2026-03-19 09:23:58 | INFO     | strategy.kama_trend | BUY signal | KAMA=45159.91 ER=0.55 slope=0.125 RSI=58.4 Score=7
+2026-03-19 09:23:59 | INFO     | strategy.kama_trend | BUY signal | KAMA=45182.19 ER=0.51 slope=0.135 RSI=60.2 Score=7
+2026-03-19 09:23:59 | INFO     | strategy.kama_trend | BUY signal | KAMA=45189.16 ER=0.36 slope=0.044 RSI=57.3 Score=5
+2026-03-19 09:23:59 | INFO     | strategy.kama_trend | BUY signal | KAMA=45204.52 ER=0.60 slope=0.100 RSI=57.5 Score=6
+2026-03-19 09:23:59 | INFO     | strategy.kama_trend | BUY signal | KAMA=45211.02 ER=0.36 slope=0.044 RSI=58.1 Score=5
+2026-03-19 09:23:59 | INFO     | strategy.kama_trend | SELL signal | KAMA=45211.83 ER=0.05 slope=-0.000 RSI=53.0 Score=6
+2026-03-19 09:23:59 | INFO     | strategy.kama_trend | BUY signal | KAMA=45213.80 ER=0.22 slope=0.014 RSI=56.0 Score=7
+2026-03-19 09:24:00 | INFO     | strategy.kama_trend | SELL signal | KAMA=45213.42 ER=0.31 slope=-0.003 RSI=52.4 Score=7
+2026-03-19 09:24:00 | INFO     | strategy.kama_trend | SELL signal | KAMA=45209.95 ER=0.32 slope=-0.028 RSI=49.4 Score=4
+2026-03-19 09:24:00 | INFO     | strategy.kama_trend | BUY signal | KAMA=45207.78 ER=0.12 slope=0.004 RSI=53.9 Score=8
+2026-03-19 09:24:00 | INFO     | strategy.kama_trend | SELL signal | KAMA=45208.14 ER=0.14 slope=-0.007 RSI=49.1 Score=6
+2026-03-19 09:24:00 | INFO     | strategy.kama_trend | BUY signal | KAMA=45208.83 ER=0.05 slope=0.007 RSI=56.3 Score=8
+2026-03-19 09:24:00 | INFO     | strategy.rsi_macd | BUY signal | RSI=58.3 MACD_h=1.4691 Price=45326.93 EMA=45175.62 Score=7
+2026-03-19 09:24:00 | INFO     | strategy.kama_trend | BUY signal | KAMA=45214.49 ER=0.24 slope=0.048 RSI=58.3 Score=5
+2026-03-19 09:24:00 | INFO     | strategy.kama_trend | BUY signal | KAMA=45227.39 ER=0.40 slope=0.124 RSI=59.8 Score=7
+2026-03-19 09:24:00 | INFO     | strategy.kama_trend | BUY signal | KAMA=45238.49 ER=0.38 slope=0.109 RSI=60.1 Score=6
+2026-03-19 09:24:01 | INFO     | strategy.rsi_macd | SELL signal | RSI=45.4 MACD_h=-4.0397 Price=45150.27 EMA=45187.99 Score=6
+2026-03-19 09:24:01 | INFO     | strategy.kama_trend | SELL signal | KAMA=45236.75 ER=0.13 slope=-0.016 RSI=45.4 Score=6
+2026-03-19 09:24:01 | INFO     | strategy.kama_trend | SELL signal | KAMA=45216.55 ER=0.39 slope=-0.170 RSI=38.7 Score=4
+2026-03-19 09:24:01 | INFO     | strategy.kama_trend | BUY signal | KAMA=45205.30 ER=0.05 slope=0.007 RSI=55.2 Score=8
+2026-03-19 09:24:01 | INFO     | strategy.rsi_macd | BUY signal | RSI=57.5 MACD_h=5.0909 Price=45354.38 EMA=45184.29 Score=7
+2026-03-19 09:24:01 | INFO     | strategy.kama_trend | BUY signal | KAMA=45206.30 ER=0.03 slope=0.008 RSI=57.5 Score=5
+2026-03-19 09:24:01 | INFO     | strategy.grid | Grid SELL at level 45483.71
+2026-03-19 09:24:01 | INFO     | strategy.kama_trend | BUY signal | KAMA=45208.48 ER=0.06 slope=0.017 RSI=59.9 Score=5
+2026-03-19 09:24:01 | INFO     | strategy.grid | Grid built: 11 levels, range 44916.16 - 45561.55, spacing=64.54
+2026-03-19 09:24:02 | INFO     | strategy.grid | Grid SELL at level 45303.40
+2026-03-19 09:24:02 | INFO     | strategy.kama_trend | BUY signal | KAMA=45216.29 ER=0.25 slope=0.056 RSI=56.7 Score=5
+2026-03-19 09:24:02 | INFO     | strategy.grid | Grid SELL at level 45367.94
+2026-03-19 09:24:02 | INFO     | strategy.kama_trend | BUY signal | KAMA=45221.22 ER=0.34 slope=0.038 RSI=52.2 Score=6
+2026-03-19 09:24:02 | INFO     | strategy.rsi_macd | SELL signal | RSI=42.5 MACD_h=-5.3115 Price=45070.27 EMA=45203.36 Score=6
+2026-03-19 09:24:02 | INFO     | strategy.grid | Grid BUY at level 44980.70
+2026-03-19 09:24:02 | INFO     | strategy.kama_trend | SELL signal | KAMA=45220.52 ER=0.01 slope=-0.005 RSI=42.5 Score=6
+2026-03-19 09:24:02 | INFO     | strategy.grid | Grid BUY at level 45109.78
+2026-03-19 09:24:02 | INFO     | strategy.mean_reversion | BUY signal | Price=44736.81 BB_lower=44881.16 RSI=33.5 BW=0.0147
+2026-03-19 09:24:02 | INFO     | strategy.grid | Grid built: 11 levels, range 44809.38 - 45615.39, spacing=80.60
+2026-03-19 09:24:02 | INFO     | strategy.grid | Grid built: 11 levels, range 44697.79 - 45634.19, spacing=93.64
+2026-03-19 09:24:02 | INFO     | strategy.kama_trend | SELL signal | KAMA=45057.36 ER=0.57 slope=-0.748 RSI=26.3 Score=4
+2026-03-19 09:24:02 | INFO     | strategy.rsi_macd | BUY signal | RSI=32.1 MACD_h=-94.0986 Price=44498.77 EMA=45125.21 Score=5
+2026-03-19 09:24:02 | INFO     | strategy.mean_reversion | BUY signal | Price=44498.77 BB_lower=44545.87 RSI=32.1 BW=0.0258
+2026-03-19 09:24:02 | INFO     | strategy.grid | Grid built: 11 levels, range 44642.39 - 45613.78, spacing=97.14
+2026-03-19 09:24:02 | INFO     | strategy.kama_trend | BUY signal | KAMA=44974.90 ER=0.53 slope=-0.424 RSI=32.1 Score=5
+2026-03-19 09:24:02 | INFO     | strategy.ensemble | Regime change: ranging -> trending_down
+2026-03-19 09:24:02 | INFO     | strategy.mean_reversion | BUY signal | Price=43702.88 BB_lower=44192.18 RSI=21.7 BW=0.0379
+2026-03-19 09:24:02 | INFO     | strategy.grid | Grid built: 11 levels, range 44415.26 - 45678.50, spacing=126.32
+2026-03-19 09:24:02 | INFO     | strategy.kama_trend | SELL signal | KAMA=44649.77 ER=0.73 slope=-1.287 RSI=21.7 Score=4
+2026-03-19 09:24:02 | INFO     | strategy.grid | Grid built: 11 levels, range 43756.65 - 45988.95, spacing=223.23
+2026-03-19 09:24:02 | INFO     | strategy.kama_trend | SELL signal | KAMA=43667.91 ER=0.88 slope=-2.199 RSI=12.0 Score=4
+2026-03-19 09:24:02 | INFO     | strategy.rsi_macd | BUY signal | RSI=21.2 MACD_h=-333.0964 Price=42316.43 EMA=44841.01 Score=5
+2026-03-19 09:24:02 | INFO     | strategy.mean_reversion | BUY signal | Price=42316.43 BB_lower=42737.36 RSI=21.2 BW=0.0887
+2026-03-19 09:24:02 | INFO     | strategy.grid | Grid built: 11 levels, range 43568.84 - 45872.50, spacing=230.37
+2026-03-19 09:24:02 | INFO     | strategy.kama_trend | BUY signal | KAMA=43357.76 ER=0.69 slope=-0.673 RSI=21.2 Score=5
+2026-03-19 09:24:02 | INFO     | strategy.ensemble | ENSEMBLE BUY | consensus=0.41 | Regime=trending_down | rsi_macd:BUY(0.5)*0.49 mean_reversion:BUY(0.7)*0.41 kama_trend:BUY(0.7)*0.65
+2026-03-19 09:24:02 | INFO     | risk | OPEN BUY 0.007089 BTC/USDT @ 42337.59 | SL=41067.46 TP=44877.84
+2026-03-19 09:24:02 | INFO     | strategy.mean_reversion | BUY signal | Price=42163.53 BB_lower=42295.95 RSI=20.4 BW=0.1021
+2026-03-19 09:24:02 | INFO     | strategy.grid | Grid built: 11 levels, range 43434.73 - 45707.93, spacing=227.32
+2026-03-19 09:24:02 | INFO     | strategy.kama_trend | BUY signal | KAMA=43071.45 ER=0.71 slope=-0.630 RSI=20.4 Score=5
+2026-03-19 09:24:02 | INFO     | strategy.rsi_macd | BUY signal | RSI=31.6 MACD_h=-300.8772 Price=42789.38 EMA=44659.67 Score=6
+2026-03-19 09:24:02 | INFO     | strategy.grid | Grid built: 11 levels, range 43285.44 - 45634.99, spacing=234.95
+2026-03-19 09:24:02 | INFO     | strategy.dca_momentum | DCA BUY #3 | RSI=31.6 Price=42789.38 EMA=44659.67 (-4.19%)
+2026-03-19 09:24:02 | INFO     | strategy.kama_trend | BUY signal | KAMA=43034.84 ER=0.49 slope=-0.078 RSI=31.6 Score=5
+2026-03-19 09:24:02 | INFO     | strategy.grid | Grid built: 11 levels, range 43186.16 - 45481.78, spacing=229.56
+2026-03-19 09:24:02 | INFO     | strategy.dca_momentum | STRONG DCA BUY #4 | RSI=29.8 Price=42539.86 EMA=44576.54 (-4.57%)
+2026-03-19 09:24:02 | INFO     | strategy.kama_trend | SELL signal | KAMA=42969.83 ER=0.49 slope=-0.142 RSI=29.8 Score=4
+2026-03-19 09:24:03 | INFO     | strategy.grid | Grid built: 11 levels, range 43065.82 - 45332.48, spacing=226.67
+2026-03-19 09:24:03 | INFO     | strategy.dca_momentum | STRONG DCA BUY #5 | RSI=29.3 Price=42468.28 EMA=44493.86 (-4.55%)
+2026-03-19 09:24:03 | INFO     | strategy.kama_trend | SELL signal | KAMA=42896.99 ER=0.53 slope=-0.161 RSI=29.3 Score=4
+2026-03-19 09:24:03 | INFO     | strategy.rsi_macd | BUY signal | RSI=30.5 MACD_h=-187.4805 Price=42536.00 EMA=44417.08 Score=5
+2026-03-19 09:24:03 | INFO     | strategy.grid | Grid built: 11 levels, range 42971.15 - 45175.63, spacing=220.45
+2026-03-19 09:24:03 | INFO     | strategy.grid | Grid built: 11 levels, range 42869.73 - 45010.00, spacing=214.03
+2026-03-19 09:24:03 | INFO     | strategy.dca_momentum | DCA BUY #6 | RSI=30.5 Price=42529.40 EMA=44343.06 (-4.09%)
+2026-03-19 09:24:03 | INFO     | strategy.grid | Grid built: 11 levels, range 42747.07 - 44831.91, spacing=208.48
+2026-03-19 09:24:03 | INFO     | strategy.dca_momentum | STRONG DCA BUY #7 | RSI=28.5 Price=42293.99 EMA=44262.70 (-4.45%)
+2026-03-19 09:24:03 | INFO     | strategy.kama_trend | SELL signal | KAMA=42753.35 ER=0.49 slope=-0.165 RSI=28.5 Score=4
+2026-03-19 09:24:03 | INFO     | strategy.grid | Grid built: 11 levels, range 42598.99 - 44654.72, spacing=205.57
+2026-03-19 09:24:03 | INFO     | strategy.dca_momentum | STRONG DCA BUY #8 | RSI=26.9 Price=42101.72 EMA=44177.96 (-4.70%)
+2026-03-19 09:24:03 | INFO     | strategy.kama_trend | BUY signal | KAMA=42689.43 ER=0.41 slope=-0.155 RSI=26.9 Score=5
+2026-03-19 09:24:03 | INFO     | strategy.rsi_macd | BUY signal | RSI=32.1 MACD_h=-69.8398 Price=42350.00 EMA=44106.27 Score=5
+2026-03-19 09:24:03 | INFO     | strategy.grid | Grid built: 11 levels, range 42468.19 - 44479.03, spacing=201.08
+2026-03-19 09:24:03 | INFO     | strategy.grid | Grid built: 11 levels, range 42348.82 - 44281.92, spacing=193.31
+2026-03-19 09:24:03 | INFO     | strategy.dca_momentum | DCA BUY #9 | RSI=30.5 Price=42179.99 EMA=44030.73 (-4.20%)
+2026-03-19 09:24:03 | INFO     | strategy.grid | Grid BUY at level 42348.82
+2026-03-19 09:24:03 | INFO     | strategy.rsi_macd | BUY signal | RSI=35.3 MACD_h=20.4111 Price=42419.83 EMA=43906.72 Score=5
+2026-03-19 09:24:03 | INFO     | strategy.grid | Grid BUY at level 42928.75
+2026-03-19 09:24:03 | INFO     | strategy.kama_trend | BUY signal | KAMA=42671.84 ER=0.30 slope=0.056 RSI=46.6 Score=8
+2026-03-19 09:24:03 | INFO     | strategy.kama_trend | BUY signal | KAMA=42721.64 ER=0.37 slope=0.126 RSI=50.9 Score=7
+2026-03-19 09:24:03 | INFO     | strategy.ensemble | Regime change: trending_down -> ranging
+2026-03-19 09:24:03 | INFO     | strategy.grid | Grid SELL at level 43508.68
+2026-03-19 09:24:03 | INFO     | strategy.kama_trend | BUY signal | KAMA=42794.16 ER=0.42 slope=0.185 RSI=53.3 Score=6
+2026-03-19 09:24:04 | INFO     | strategy.kama_trend | BUY signal | KAMA=42820.03 ER=0.40 slope=0.044 RSI=46.8 Score=6
+2026-03-19 09:24:04 | INFO     | strategy.grid | Grid BUY at level 42735.44
+2026-03-19 09:24:04 | INFO     | strategy.kama_trend | SELL signal | KAMA=42822.83 ER=0.30 slope=-0.006 RSI=43.7 Score=6
+2026-03-19 09:24:04 | INFO     | strategy.ensemble | Regime change: ranging -> trending_down
+2026-03-19 09:24:04 | INFO     | strategy.kama_trend | BUY signal | KAMA=42825.00 ER=0.25 slope=0.011 RSI=46.2 Score=7
+2026-03-19 09:24:04 | INFO     | strategy.kama_trend | SELL signal | KAMA=42825.21 ER=0.17 slope=-0.006 RSI=43.4 Score=6
+2026-03-19 09:24:04 | INFO     | strategy.kama_trend | SELL signal | KAMA=42810.38 ER=0.46 slope=-0.043 RSI=42.5 Score=4
+2026-03-19 09:24:04 | INFO     | strategy.grid | Grid built: 11 levels, range 41758.59 - 43618.44, spacing=185.98
+2026-03-19 09:24:04 | INFO     | strategy.kama_trend | SELL signal | KAMA=42656.44 ER=0.77 slope=-0.414 RSI=35.6 Score=4
+2026-03-19 09:24:05 | INFO     | strategy.grid | Grid BUY at level 42502.53
+2026-03-19 09:24:05 | INFO     | strategy.kama_trend | BUY signal | KAMA=42637.04 ER=0.40 slope=-0.052 RSI=40.2 Score=5
+2026-03-19 09:24:05 | INFO     | strategy.kama_trend | BUY signal | KAMA=42638.49 ER=0.22 slope=0.004 RSI=45.1 Score=7
+2026-03-19 09:24:05 | INFO     | strategy.kama_trend | SELL signal | KAMA=42638.86 ER=0.14 slope=-0.003 RSI=43.7 Score=6
+2026-03-19 09:24:05 | INFO     | strategy.kama_trend | BUY signal | KAMA=42640.09 ER=0.14 slope=0.006 RSI=46.8 Score=7
+2026-03-19 09:24:05 | INFO     | strategy.ensemble | Regime change: trending_down -> ranging
+2026-03-19 09:24:05 | INFO     | strategy.kama_trend | SELL signal | KAMA=42641.24 ER=0.05 slope=-0.000 RSI=44.9 Score=6
+2026-03-19 09:24:05 | INFO     | strategy.grid | Grid SELL at level 42874.50
+2026-03-19 09:24:05 | INFO     | strategy.kama_trend | BUY signal | KAMA=42668.37 ER=0.55 slope=0.093 RSI=49.9 Score=10
+2026-03-19 09:24:05 | INFO     | strategy.kama_trend | BUY signal | KAMA=42691.95 ER=0.47 slope=0.084 RSI=51.1 Score=5
+2026-03-19 09:24:05 | INFO     | strategy.kama_trend | BUY signal | KAMA=42708.67 ER=0.34 slope=0.063 RSI=52.6 Score=5
+2026-03-19 09:24:05 | INFO     | strategy.kama_trend | BUY signal | KAMA=42723.86 ER=0.34 slope=0.059 RSI=52.7 Score=5
+2026-03-19 09:24:06 | INFO     | strategy.kama_trend | SELL signal | KAMA=42723.27 ER=0.11 slope=-0.002 RSI=46.0 Score=6
+2026-03-19 09:24:06 | INFO     | strategy.kama_trend | BUY signal | KAMA=42722.80 ER=0.03 slope=0.001 RSI=48.2 Score=7
+2026-03-19 09:24:06 | INFO     | strategy.kama_trend | SELL signal | KAMA=42722.07 ER=0.04 slope=-0.003 RSI=44.8 Score=6
+2026-03-19 09:24:06 | INFO     | strategy.kama_trend | BUY signal | KAMA=42722.45 ER=0.05 slope=0.002 RSI=49.2 Score=7
+2026-03-19 09:24:06 | INFO     | strategy.kama_trend | SELL signal | KAMA=42722.24 ER=0.08 slope=-0.001 RSI=47.4 Score=6
+2026-03-19 09:24:06 | INFO     | strategy.kama_trend | BUY signal | KAMA=42723.10 ER=0.03 slope=0.004 RSI=51.7 Score=7
+2026-03-19 09:24:06 | INFO     | strategy.kama_trend | BUY signal | KAMA=42725.70 ER=0.08 slope=0.012 RSI=54.4 Score=5
+2026-03-19 09:24:07 | INFO     | strategy.kama_trend | BUY signal | KAMA=42744.74 ER=0.32 slope=0.054 RSI=52.9 Score=6
+2026-03-19 09:24:07 | INFO     | strategy.kama_trend | SELL signal | KAMA=42744.47 ER=0.04 slope=-0.001 RSI=46.1 Score=6
+2026-03-19 09:24:07 | INFO     | strategy.rsi_macd | SELL signal | RSI=46.4 MACD_h=-1.4352 Price=42708.01 EMA=42984.43 Score=6
+2026-03-19 09:24:07 | INFO     | strategy.kama_trend | BUY signal | KAMA=42749.71 ER=0.23 slope=0.034 RSI=53.5 Score=7
+2026-03-19 09:24:07 | INFO     | strategy.grid | Grid SELL at level 43060.49
+2026-03-19 09:24:07 | INFO     | strategy.kama_trend | BUY signal | KAMA=42776.77 ER=0.31 slope=0.137 RSI=61.6 Score=7
+2026-03-19 09:24:08 | INFO     | strategy.kama_trend | BUY signal | KAMA=42810.14 ER=0.39 slope=0.188 RSI=62.1 Score=7
+2026-03-19 09:24:08 | INFO     | strategy.kama_trend | BUY signal | KAMA=42861.95 ER=0.51 slope=0.234 RSI=58.8 Score=7
+2026-03-19 09:24:08 | INFO     | strategy.kama_trend | BUY signal | KAMA=42882.71 ER=0.47 slope=0.125 RSI=55.4 Score=6
+2026-03-19 09:24:08 | INFO     | strategy.kama_trend | BUY signal | KAMA=42915.88 ER=0.50 slope=0.204 RSI=58.9 Score=6
+2026-03-19 09:24:08 | INFO     | strategy.kama_trend | BUY signal | KAMA=42926.83 ER=0.30 slope=0.070 RSI=57.4 Score=5
+2026-03-19 09:24:08 | INFO     | strategy.kama_trend | BUY signal | KAMA=42945.22 ER=0.37 slope=0.121 RSI=59.3 Score=6
+2026-03-19 09:24:08 | INFO     | strategy.grid | Grid SELL at level 43246.47
+2026-03-19 09:24:08 | INFO     | strategy.kama_trend | BUY signal | KAMA=42960.11 ER=0.33 slope=0.101 RSI=59.9 Score=5
+2026-03-19 09:24:08 | INFO     | strategy.kama_trend | BUY signal | KAMA=42966.86 ER=0.12 slope=0.033 RSI=61.3 Score=5
+2026-03-19 09:24:09 | INFO     | strategy.kama_trend | BUY signal | KAMA=42991.12 ER=0.27 slope=0.081 RSI=58.5 Score=5
+2026-03-19 09:24:09 | INFO     | strategy.kama_trend | BUY signal | KAMA=42994.67 ER=0.15 slope=0.012 RSI=50.6 Score=5
+2026-03-19 09:24:09 | INFO     | strategy.kama_trend | SELL signal | KAMA=42994.41 ER=0.27 slope=-0.002 RSI=46.8 Score=6
+2026-03-19 09:24:09 | INFO     | strategy.kama_trend | SELL signal | KAMA=42972.22 ER=0.41 slope=-0.135 RSI=37.3 Score=4
+2026-03-19 09:24:09 | INFO     | strategy.kama_trend | BUY signal | KAMA=42957.00 ER=0.50 slope=-0.093 RSI=42.6 Score=5
+2026-03-19 09:24:10 | INFO     | strategy.kama_trend | BUY signal | KAMA=42955.85 ER=0.31 slope=-0.007 RSI=46.7 Score=5
+2026-03-19 09:24:10 | INFO     | strategy.kama_trend | SELL signal | KAMA=42941.90 ER=0.38 slope=-0.081 RSI=40.9 Score=4
+2026-03-19 09:24:10 | INFO     | strategy.dca_momentum | DCA BUY #10 | RSI=43.9 Price=42849.66 EMA=43014.08 (-0.38%)
+2026-03-19 09:24:10 | INFO     | strategy.kama_trend | BUY signal | KAMA=42930.03 ER=0.39 slope=-0.036 RSI=45.0 Score=5
+2026-03-19 09:24:10 | INFO     | strategy.kama_trend | BUY signal | KAMA=42931.80 ER=0.18 slope=0.011 RSI=50.5 Score=7
+2026-03-19 09:24:10 | INFO     | strategy.kama_trend | BUY signal | KAMA=42933.18 ER=0.06 slope=0.005 RSI=51.5 Score=5
+2026-03-19 09:24:10 | INFO     | strategy.kama_trend | SELL signal | KAMA=42932.26 ER=0.03 slope=-0.006 RSI=41.8 Score=6
+2026-03-19 09:24:10 | INFO     | strategy.kama_trend | BUY signal | KAMA=42934.40 ER=0.16 slope=0.012 RSI=52.1 Score=8
+2026-03-19 09:24:10 | INFO     | strategy.rsi_macd | BUY signal | RSI=54.3 MACD_h=5.5063 Price=43073.26 EMA=42998.42 Score=7
+2026-03-19 09:24:10 | INFO     | strategy.kama_trend | BUY signal | KAMA=42937.55 ER=0.14 slope=0.018 RSI=54.3 Score=5
+2026-03-19 09:24:10 | INFO     | strategy.kama_trend | BUY signal | KAMA=42943.36 ER=0.30 slope=0.033 RSI=52.6 Score=5
+2026-03-19 09:24:11 | INFO     | strategy.kama_trend | BUY signal | KAMA=42953.79 ER=0.31 slope=0.059 RSI=55.6 Score=7
+2026-03-19 09:24:11 | INFO     | strategy.kama_trend | BUY signal | KAMA=42967.49 ER=0.33 slope=0.079 RSI=57.3 Score=7
+2026-03-19 09:24:11 | INFO     | strategy.kama_trend | BUY signal | KAMA=42997.87 ER=0.36 slope=0.126 RSI=60.8 Score=7
+2026-03-19 09:24:11 | INFO     | strategy.kama_trend | BUY signal | KAMA=43026.74 ER=0.38 slope=0.130 RSI=60.5 Score=7
+2026-03-19 09:24:11 | INFO     | strategy.grid | Grid SELL at level 43432.46
+2026-03-19 09:24:11 | INFO     | strategy.kama_trend | BUY signal | KAMA=43115.73 ER=0.73 slope=0.513 RSI=64.4 Score=7
+2026-03-19 09:24:11 | INFO     | strategy.kama_trend | BUY signal | KAMA=43134.95 ER=0.43 slope=0.114 RSI=59.9 Score=6
+2026-03-19 09:24:11 | INFO     | strategy.kama_trend | BUY signal | KAMA=43153.26 ER=0.38 slope=0.083 RSI=58.9 Score=7
+2026-03-19 09:24:11 | INFO     | strategy.kama_trend | BUY signal | KAMA=43168.44 ER=0.36 slope=0.091 RSI=60.8 Score=7
+2026-03-19 09:24:11 | INFO     | strategy.kama_trend | BUY signal | KAMA=43180.46 ER=0.23 slope=0.041 RSI=59.5 Score=5
+2026-03-19 09:24:12 | INFO     | strategy.kama_trend | BUY signal | KAMA=43196.73 ER=0.29 slope=0.099 RSI=64.4 Score=5
+2026-03-19 09:24:12 | INFO     | strategy.mean_reversion | SELL signal | Price=43676.07 BB_upper=43605.73 RSI=71.0
+2026-03-19 09:24:12 | INFO     | strategy.grid | Grid built: 11 levels, range 42766.26 - 43663.73, spacing=89.75
+2026-03-19 09:24:12 | INFO     | strategy.kama_trend | BUY signal | KAMA=43278.74 ER=0.58 slope=0.457 RSI=71.0 Score=6
+2026-03-19 09:24:12 | INFO     | strategy.mean_reversion | SELL signal | Price=43820.80 BB_upper=43712.68 RSI=74.4
+2026-03-19 09:24:12 | INFO     | strategy.grid | Grid built: 11 levels, range 42804.38 - 43713.75, spacing=90.94
+2026-03-19 09:24:12 | INFO     | strategy.kama_trend | BUY signal | KAMA=43377.58 ER=0.60 slope=0.543 RSI=74.4 Score=6
+2026-03-19 09:24:12 | INFO     | strategy.mean_reversion | SELL signal | Price=44154.01 BB_upper=43882.15 RSI=80.1
+2026-03-19 09:24:12 | INFO     | strategy.grid | Grid built: 11 levels, range 42826.50 - 43828.37, spacing=100.19
+2026-03-19 09:24:12 | INFO     | strategy.kama_trend | BUY signal | KAMA=43551.78 ER=0.68 slope=0.869 RSI=80.1 Score=6
+2026-03-19 09:24:12 | INFO     | strategy.ensemble | Regime change: ranging -> trending_up
+2026-03-19 09:24:12 | INFO     | strategy.mean_reversion | SELL signal | Price=44132.00 BB_upper=44023.77 RSI=78.9
+2026-03-19 09:24:12 | INFO     | strategy.grid | Grid built: 11 levels, range 42867.44 - 43899.23, spacing=103.18
+2026-03-19 09:24:12 | INFO     | strategy.kama_trend | BUY signal | KAMA=43712.66 ER=0.77 slope=0.780 RSI=78.9 Score=5
+2026-03-19 09:24:12 | INFO     | strategy.rsi_macd | SELL signal | RSI=74.2 MACD_h=85.4079 Price=44051.10 EMA=43275.76 Score=5
+2026-03-19 09:24:12 | INFO     | strategy.grid | Grid built: 11 levels, range 42921.76 - 43942.69, spacing=102.09
+2026-03-19 09:24:12 | INFO     | strategy.kama_trend | BUY signal | KAMA=43799.73 ER=0.74 slope=0.426 RSI=74.2 Score=5
+2026-03-19 09:24:12 | INFO     | strategy.rsi_macd | SELL signal | RSI=67.7 MACD_h=68.7938 Price=43928.01 EMA=43301.34 Score=5
+2026-03-19 09:24:12 | INFO     | strategy.grid | Grid SELL at level 43840.60
+2026-03-19 09:24:12 | INFO     | strategy.kama_trend | BUY signal | KAMA=43819.18 ER=0.54 slope=0.092 RSI=67.7 Score=5
+2026-03-19 09:24:12 | INFO     | strategy.grid | Grid SELL at level 43942.69
+2026-03-19 09:24:13 | INFO     | strategy.kama_trend | BUY signal | KAMA=43825.61 ER=0.45 slope=0.030 RSI=65.2 Score=5
+2026-03-19 09:24:13 | INFO     | strategy.kama_trend | BUY signal | KAMA=43842.41 ER=0.53 slope=0.079 RSI=66.8 Score=6
+2026-03-19 09:24:13 | INFO     | strategy.grid | Grid built: 11 levels, range 43096.48 - 44177.32, spacing=108.08
+2026-03-19 09:24:13 | INFO     | strategy.kama_trend | BUY signal | KAMA=43897.50 ER=0.54 slope=0.211 RSI=71.5 Score=6
+2026-03-19 09:24:13 | INFO     | strategy.rsi_macd | SELL signal | RSI=67.8 MACD_h=23.0778 Price=44085.60 EMA=43427.87 Score=5
+2026-03-19 09:24:13 | INFO     | strategy.grid | Grid SELL at level 44069.23
+2026-03-19 09:24:13 | INFO     | strategy.kama_trend | BUY signal | KAMA=43912.14 ER=0.36 slope=0.068 RSI=67.8 Score=5
+2026-03-19 09:24:13 | INFO     | strategy.grid | Grid SELL at level 43744.98
+2026-03-19 09:24:13 | INFO     | strategy.kama_trend | SELL signal | KAMA=43911.75 ER=0.01 slope=-0.002 RSI=56.5 Score=6
+2026-03-19 09:24:13 | INFO     | strategy.grid | Grid SELL at level 43961.15
+2026-03-19 09:24:13 | INFO     | strategy.kama_trend | BUY signal | KAMA=43913.64 ER=0.15 slope=0.009 RSI=60.9 Score=7
+2026-03-19 09:24:13 | INFO     | strategy.grid | Grid built: 11 levels, range 43433.36 - 44430.66, spacing=99.73
+2026-03-19 09:24:13 | INFO     | strategy.rsi_macd | BUY signal | RSI=70.3 MACD_h=6.0456 Price=44384.21 EMA=43605.42 Score=7
+2026-03-19 09:24:13 | INFO     | strategy.grid | Grid SELL at level 44330.93
+2026-03-19 09:24:13 | INFO     | strategy.kama_trend | BUY signal | KAMA=43977.52 ER=0.39 slope=0.196 RSI=70.3 Score=6
+2026-03-19 09:24:14 | INFO     | strategy.rsi_macd | SELL signal | RSI=58.1 MACD_h=-5.0228 Price=44099.32 EMA=43624.79 Score=7
+2026-03-19 09:24:14 | INFO     | strategy.grid | Grid SELL at level 44031.74
+2026-03-19 09:24:14 | INFO     | strategy.kama_trend | SELL signal | KAMA=43978.20 ER=0.10 slope=-0.002 RSI=53.1 Score=6
+2026-03-19 09:24:14 | INFO     | strategy.kama_trend | BUY signal | KAMA=43978.35 ER=0.14 slope=0.001 RSI=53.9 Score=7
+2026-03-19 09:24:14 | INFO     | strategy.ensemble | Regime change: trending_up -> ranging
+2026-03-19 09:24:14 | INFO     | strategy.grid | Grid SELL at level 44131.47
+2026-03-19 09:24:14 | INFO     | strategy.ensemble | Regime change: ranging -> trending_up
+2026-03-19 09:24:14 | INFO     | strategy.kama_trend | BUY signal | KAMA=43998.06 ER=0.28 slope=0.079 RSI=63.1 Score=5
+2026-03-19 09:24:14 | INFO     | strategy.grid | Grid SELL at level 44231.20
+2026-03-19 09:24:14 | INFO     | strategy.kama_trend | BUY signal | KAMA=44006.47 ER=0.14 slope=0.027 RSI=60.0 Score=5
+2026-03-19 09:24:14 | INFO     | strategy.grid | Grid SELL at level 44430.66
+2026-03-19 09:24:14 | INFO     | strategy.rsi_macd | BUY signal | RSI=61.2 MACD_h=2.3973 Price=44430.86 EMA=43805.09 Score=6
+2026-03-19 09:24:14 | INFO     | strategy.grid | Grid built: 11 levels, range 43521.45 - 44748.41, spacing=122.70
+2026-03-19 09:24:14 | INFO     | strategy.grid | Grid SELL at level 44625.72
+2026-03-19 09:24:14 | INFO     | strategy.kama_trend | BUY signal | KAMA=44069.37 ER=0.34 slope=0.177 RSI=65.0 Score=7
+2026-03-19 09:24:14 | INFO     | strategy.grid | Grid SELL at level 44503.02
+2026-03-19 09:24:14 | INFO     | strategy.kama_trend | BUY signal | KAMA=44096.99 ER=0.33 slope=0.113 RSI=59.9 Score=6
+2026-03-19 09:24:14 | INFO     | strategy.grid | Grid SELL at level 44380.33
+2026-03-19 09:24:15 | INFO     | strategy.grid | Grid SELL at level 44257.63
+2026-03-19 09:24:15 | INFO     | strategy.ensemble | Regime change: trending_up -> ranging
+2026-03-19 09:24:15 | INFO     | strategy.grid | Grid BUY at level 44012.24
+2026-03-19 09:24:15 | INFO     | strategy.kama_trend | SELL signal | KAMA=44121.97 ER=0.64 slope=-0.029 RSI=47.8 Score=7
+2026-03-19 09:24:15 | INFO     | strategy.kama_trend | BUY signal | KAMA=44128.13 ER=0.33 slope=0.030 RSI=51.7 Score=9
+2026-03-19 09:24:16 | INFO     | strategy.kama_trend | BUY signal | KAMA=44129.24 ER=0.31 slope=0.005 RSI=49.4 Score=5
+2026-03-19 09:24:16 | INFO     | strategy.ensemble | Regime change: ranging -> trending_down
+2026-03-19 09:24:16 | INFO     | strategy.grid | Grid BUY at level 43889.54
+2026-03-19 09:24:16 | INFO     | strategy.kama_trend | SELL signal | KAMA=44103.76 ER=0.44 slope=-0.120 RSI=41.8 Score=7
+2026-03-19 09:24:16 | INFO     | strategy.mean_reversion | BUY signal | Price=43376.00 BB_lower=43685.17 RSI=30.9 BW=0.0236
+2026-03-19 09:24:16 | INFO     | strategy.grid | Grid built: 11 levels, range 43467.49 - 44944.12, spacing=147.66
+2026-03-19 09:24:16 | INFO     | strategy.kama_trend | SELL signal | KAMA=43925.45 ER=0.69 slope=-0.559 RSI=30.9 Score=4
+2026-03-19 09:24:16 | INFO     | strategy.grid | Grid BUY at level 43615.16
+2026-03-19 09:24:16 | INFO     | strategy.kama_trend | BUY signal | KAMA=43903.94 ER=0.35 slope=-0.067 RSI=39.7 Score=5

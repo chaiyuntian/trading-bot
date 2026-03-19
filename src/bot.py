@@ -34,6 +34,30 @@ STRATEGY_MAP = {
     "kama_trend": KamaTrendStrategy,
 }
 
+
+class AlphaCombinerStrategy:
+    """Adapter: wraps SignalCombiner as a BaseStrategy for backtest compatibility."""
+    strategy_name = "Alpha Combiner"
+
+    def __init__(self, config: dict):
+        from src.alpha.combiner import SignalCombiner
+        self.combiner = SignalCombiner(config)
+        self.config = config
+        self.params = config.get("strategy", {}).get("params", {})
+
+    def name(self):
+        return self.strategy_name
+
+    def generate_signal(self, df):
+        sig = self.combiner.combine(df)
+        return sig.signal.value
+
+    def generate_rich_signal(self, df):
+        return self.combiner.combine(df)
+
+
+STRATEGY_MAP["alpha"] = AlphaCombinerStrategy
+
 # Timeframe to seconds mapping
 _TF_SECONDS = {
     "1m": 60, "3m": 180, "5m": 300, "15m": 900,
