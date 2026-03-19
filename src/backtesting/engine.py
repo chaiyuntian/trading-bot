@@ -1,7 +1,14 @@
 """Backtesting engine — simulates trading on historical data.
 
-Accounts for fees, slippage, and realistic execution constraints.
-Uses the same strategy interface as live trading for consistency.
+Accounts for fees, slippage, ATR-adaptive stops, trailing stops,
+minimum hold periods, and realistic execution constraints.
+
+Key improvements over v1:
+- ATR-adaptive stop-loss and take-profit
+- Minimum hold period enforcement (prevents fee-churning)
+- Trailing stop tracking
+- Candle index tracking for cooldowns
+- Fee-aware position sizing
 """
 
 import pandas as pd
@@ -9,6 +16,7 @@ import numpy as np
 from tabulate import tabulate
 from src.risk.manager import RiskManager
 from src.strategies.base import BaseStrategy
+from src.indicators.technical import add_atr
 from src.utils.logger import setup_logger
 
 logger = setup_logger("backtest")
@@ -32,16 +40,21 @@ class BacktestEngine:
             f"{len(df)} candles"
         )
 
+        # Pre-compute ATR for adaptive stops
+        df_with_atr = add_atr(df.copy(), 14)
+        atr_values = df_with_atr["atr_14"].values
+
         lookback = 60
         trade_counter = 0
-
-        # Pre-compute close prices as numpy array for fast stop checks
         close_prices = df["close"].values
 
         for i in range(lookback, len(df)):
-            # Use iloc slice — avoids copy for the common case
             window = df.iloc[:i + 1]
             current_price = float(close_prices[i])
+            current_atr = float(atr_values[i]) if not np.isnan(atr_values[i]) else None
+
+            # Track candle index for hold period / cooldown
+            self.risk_manager.set_candle_index(i)
 
             # Track equity
             open_pnl = sum(
@@ -52,7 +65,7 @@ class BacktestEngine:
             )
             self.equity_curve.append(self.risk_manager.capital + open_pnl)
 
-            # Check stops on open trades
+            # Check stops on open trades (trailing stop updates here)
             self.risk_manager.check_stops(
                 self.config["trading"]["symbol"], current_price
             )
@@ -66,9 +79,20 @@ class BacktestEngine:
             signal = self.strategy.generate_signal(window)
 
             if signal == "buy" and can_trade:
-                stop_price = self.risk_manager.get_stop_loss(current_price, "buy")
+                stop_price = self.risk_manager.get_stop_loss(current_price, "buy", current_atr)
+                tp_price = self.risk_manager.get_take_profit(current_price, "buy", current_atr)
+
+                # Get confidence if available
+                confidence = 1.0
+                if hasattr(self.strategy, 'generate_rich_signal'):
+                    try:
+                        rich = self.strategy.generate_rich_signal(window)
+                        confidence = rich.confidence
+                    except Exception:
+                        pass
+
                 amount = self.risk_manager.calculate_position_size(
-                    current_price, stop_price
+                    current_price, stop_price, confidence
                 )
 
                 if amount * current_price < 5:
@@ -82,7 +106,9 @@ class BacktestEngine:
                 self.risk_manager.open_trade(
                     f"bt_{trade_counter}",
                     self.config["trading"]["symbol"],
-                    "buy", exec_price, amount
+                    "buy", exec_price, amount,
+                    stop_loss=stop_price, take_profit=tp_price,
+                    atr=current_atr,
                 )
                 self.trades_log.append({
                     "id": trade_counter,
@@ -95,6 +121,10 @@ class BacktestEngine:
 
             elif signal == "sell" and self.risk_manager.open_trades:
                 for trade in list(self.risk_manager.open_trades):
+                    # Enforce minimum hold period
+                    if not self.risk_manager.can_sell_trade(trade):
+                        continue
+
                     exec_price = current_price * (1 - self.slippage)
                     fee = trade.amount * exec_price * self.fee_rate
                     self.risk_manager.capital -= fee

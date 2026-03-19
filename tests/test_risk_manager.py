@@ -14,6 +14,8 @@ def make_config(capital=100, **overrides):
             "risk_per_trade_pct": 0.02,
             "max_open_trades": 3,
             "trailing_stop": False,
+            "min_hold_candles": 0,
+            "sl_cooldown_candles": 0,
         }
     }
     cfg["risk"].update(overrides)
