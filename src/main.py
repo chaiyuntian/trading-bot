@@ -115,6 +115,23 @@ def run_all_backtests(config: dict):
     return results
 
 
+def run_walk_forward(config: dict, strategy_name: str = None):
+    """Run walk-forward validation to detect overfitting."""
+    from src.backtesting.walk_forward import WalkForwardValidator
+
+    name = strategy_name or config["strategy"]["name"]
+    if name not in STRATEGY_MAP:
+        print(f"Unknown strategy: {name}. Available: {list(STRATEGY_MAP.keys())}")
+        return None
+
+    df = fetch_backtest_data(config)
+    validator = WalkForwardValidator(
+        config, STRATEGY_MAP[name],
+        train_days=30, test_days=10, step_days=10
+    )
+    return validator.run(df)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Crypto Trading Bot")
     parser.add_argument("--config", default="config/config.yaml",
@@ -123,6 +140,8 @@ def main():
                         help="Run backtest mode")
     parser.add_argument("--backtest-all", action="store_true",
                         help="Backtest all strategies and compare")
+    parser.add_argument("--walk-forward", action="store_true",
+                        help="Run walk-forward validation (detect overfitting)")
     parser.add_argument("--strategy", type=str, default=None,
                         help="Override strategy name")
     args = parser.parse_args()
@@ -140,7 +159,9 @@ def main():
         console=log_cfg.get("console", True),
     )
 
-    if args.backtest_all:
+    if args.walk_forward:
+        run_walk_forward(config)
+    elif args.backtest_all:
         run_all_backtests(config)
     elif args.backtest:
         run_backtest(config)

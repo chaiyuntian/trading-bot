@@ -64,6 +64,55 @@ def add_stochastic_rsi(df: pd.DataFrame, period: int = 14) -> pd.DataFrame:
     return df
 
 
+def add_kama(df: pd.DataFrame, period: int = 10,
+             fast_sc: int = 2, slow_sc: int = 30) -> pd.DataFrame:
+    """Kaufman Adaptive Moving Average (KAMA).
+
+    Adapts smoothing speed based on the efficiency ratio (ER):
+    - High ER (trending): KAMA moves fast like a short EMA
+    - Low ER (noisy): KAMA moves slowly like a long EMA
+
+    This reduces whipsaws in choppy markets while staying responsive in trends.
+    """
+    close = df["close"].values
+    n = len(close)
+    col = f"kama_{period}"
+
+    if n < period + 1:
+        df[col] = None
+        return df
+
+    fast_alpha = 2.0 / (fast_sc + 1)
+    slow_alpha = 2.0 / (slow_sc + 1)
+
+    kama = pd.Series(index=df.index, dtype=float)
+    kama.iloc[period - 1] = close[period - 1]
+
+    for i in range(period, n):
+        direction = abs(close[i] - close[i - period])
+        volatility = sum(abs(close[j] - close[j - 1]) for j in range(i - period + 1, i + 1))
+
+        if volatility == 0:
+            er = 0.0
+        else:
+            er = direction / volatility
+
+        sc = (er * (fast_alpha - slow_alpha) + slow_alpha) ** 2
+        kama.iloc[i] = kama.iloc[i - 1] + sc * (close[i] - kama.iloc[i - 1])
+
+    df[col] = kama
+    return df
+
+
+def add_kama_efficiency_ratio(df: pd.DataFrame, period: int = 10) -> pd.DataFrame:
+    """Kaufman Efficiency Ratio — measures trend strength (0=noise, 1=perfect trend)."""
+    close = df["close"]
+    direction = (close - close.shift(period)).abs()
+    volatility = close.diff().abs().rolling(period).sum()
+    df[f"er_{period}"] = direction / volatility.replace(0, float("nan"))
+    return df
+
+
 def add_all_indicators(df: pd.DataFrame, config: dict) -> pd.DataFrame:
     """Add all indicators based on strategy config."""
     params = config.get("strategy", {}).get("params", {})
@@ -76,5 +125,6 @@ def add_all_indicators(df: pd.DataFrame, config: dict) -> pd.DataFrame:
     df = add_bollinger_bands(df)
     df = add_atr(df)
     df = add_volume_sma(df)
+    df = add_kama(df, params.get("kama_period", 10))
 
     return df

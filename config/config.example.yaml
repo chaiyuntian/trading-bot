@@ -5,7 +5,7 @@
 # ============================================================
 
 exchange:
-  name: binance          # binance, bybit, kucoin
+  name: binance          # binance, bybit, kucoin, + 100 more via ccxt
   api_key: "YOUR_API_KEY"
   api_secret: "YOUR_API_SECRET"
   sandbox: true          # USE SANDBOX/TESTNET FIRST!
@@ -18,7 +18,7 @@ trading:
   mode: "paper"          # paper, live (START WITH PAPER!)
 
 strategy:
-  name: "ensemble"       # ensemble, rsi_macd, mean_reversion, grid, dca_momentum
+  name: "ensemble"       # ensemble, rsi_macd, mean_reversion, grid, dca_momentum, kama_trend
   params:
     # RSI + MACD Strategy
     rsi_period: 14
@@ -29,6 +29,18 @@ strategy:
     macd_signal: 9
     # EMA filter
     ema_period: 50
+    # Grid trading
+    grid_levels: 10
+    grid_spacing_atr_mult: 0.5
+    # DCA momentum
+    dca_interval: 4
+    # KAMA adaptive trend
+    kama_period: 10
+    er_threshold: 0.3         # Efficiency Ratio threshold for trend confirmation
+    # Ensemble
+    ensemble_min_consensus: 0.4
+    ensemble_rolling_window: 50   # Window for dynamic Sharpe-weighted voting
+    ensemble_regime_blend: 0.6    # 0=fully dynamic, 1=fully regime-based
 
 risk:
   max_position_pct: 0.30       # Max 30% of capital per trade

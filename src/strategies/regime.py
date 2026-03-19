@@ -120,24 +120,28 @@ def get_regime_strategy_weights(regime: MarketRegime) -> dict[str, float]:
             "dca_momentum": 0.9,
             "mean_reversion": 0.2,
             "grid": 0.3,
+            "kama_trend": 0.9,
         },
         MarketRegime.TRENDING_DOWN: {
             "rsi_macd": 0.5,
             "dca_momentum": 0.3,
             "mean_reversion": 0.3,
             "grid": 0.2,
+            "kama_trend": 0.7,
         },
         MarketRegime.RANGING: {
             "rsi_macd": 0.4,
             "dca_momentum": 0.5,
             "mean_reversion": 0.9,
             "grid": 0.8,
+            "kama_trend": 0.3,
         },
         MarketRegime.VOLATILE: {
             "rsi_macd": 0.3,
             "dca_momentum": 0.2,
             "mean_reversion": 0.4,
             "grid": 0.5,
+            "kama_trend": 0.6,
         },
     }
     return weights.get(regime, weights[MarketRegime.RANGING])

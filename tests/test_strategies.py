@@ -5,6 +5,7 @@ from src.strategies.mean_reversion import MeanReversionStrategy
 from src.strategies.grid_trading import GridTradingStrategy
 from src.strategies.dca_momentum import DCAMomentumStrategy
 from src.strategies.ensemble import EnsembleStrategy
+from src.strategies.kama_trend import KamaTrendStrategy
 from src.strategies.base import Signal
 
 
@@ -24,6 +25,8 @@ def make_config():
                 "grid_spacing_atr_mult": 0.5,
                 "dca_interval": 4,
                 "ensemble_min_consensus": 0.4,
+                "kama_period": 10,
+                "er_threshold": 0.3,
             }
         }
     }
@@ -105,6 +108,23 @@ def test_ensemble_rich_signal_has_regime():
     sig = strategy.generate_rich_signal(df)
     assert sig.signal in (Signal.BUY, Signal.SELL, Signal.HOLD)
     assert "Regime=" in sig.reason
+
+
+def test_kama_trend_returns_valid_signal():
+    config = make_config()
+    strategy = KamaTrendStrategy(config)
+    df = make_sample_df()
+    signal = strategy.generate_signal(df)
+    assert signal in ("buy", "sell", "hold")
+
+
+def test_kama_trend_rich_signal():
+    config = make_config()
+    strategy = KamaTrendStrategy(config)
+    df = make_sample_df()
+    sig = strategy.generate_rich_signal(df)
+    assert sig.signal in (Signal.BUY, Signal.SELL, Signal.HOLD)
+    assert 0 <= sig.confidence <= 1.0
 
 
 def test_strategy_handles_small_data():

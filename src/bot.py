@@ -20,6 +20,7 @@ from src.strategies.mean_reversion import MeanReversionStrategy
 from src.strategies.grid_trading import GridTradingStrategy
 from src.strategies.dca_momentum import DCAMomentumStrategy
 from src.strategies.ensemble import EnsembleStrategy
+from src.strategies.kama_trend import KamaTrendStrategy
 from src.utils.logger import setup_logger
 
 logger = setup_logger("bot")
@@ -30,6 +31,7 @@ STRATEGY_MAP = {
     "grid": GridTradingStrategy,
     "dca_momentum": DCAMomentumStrategy,
     "ensemble": EnsembleStrategy,
+    "kama_trend": KamaTrendStrategy,
 }
 
 # Timeframe to seconds mapping

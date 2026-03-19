@@ -1,87 +1,138 @@
 # Crypto Trading Bot
 
-自动化加密货币交易机器人，支持多种策略、回测引擎和风险管理。
+Automated cryptocurrency trading bot with multiple strategies, backtesting engine, walk-forward validation, and risk management.
 
-> **⚠️ 风险警告**: 交易涉及资金损失风险。本项目仅供学习和研究用途。请勿投入无法承受损失的资金。过往回测表现不代表未来收益。
+> **WARNING**: Trading involves risk of financial loss. This project is for learning and research purposes only. Never invest more than you can afford to lose. Past backtest performance does not guarantee future results.
 
-## 功能特性
+## Features
 
-- **4种交易策略**: RSI+MACD组合、均值回归、网格交易、DCA动量
-- **风险管理**: 仓位控制、止损/止盈、最大回撤限制、每日亏损限制
-- **回测引擎**: 历史数据回测，考虑手续费和滑点
-- **模拟交易**: Paper trading 模式，不需要真金白银
-- **多交易所**: 通过 ccxt 支持 Binance、Bybit、KuCoin 等 100+ 交易所
+- **6 Trading Strategies**: RSI+MACD, Mean Reversion, Grid Trading, DCA Momentum, Ensemble (regime-adaptive), KAMA Trend
+- **Adaptive Intelligence**: KAMA (Kaufman Adaptive MA), dynamic ensemble weighting, walk-forward optimization
+- **Risk Management**: Position sizing, stop-loss/take-profit, max drawdown limits, daily loss limits
+- **Backtesting Engine**: Historical data backtesting with fee/slippage modeling
+- **Walk-Forward Validation**: Out-of-sample testing to detect overfitting
+- **System Verification**: End-to-end smoke tests, integration tests, and validation suite
+- **Paper Trading**: Simulated trading mode — no real money required
+- **Multi-Exchange**: Supports Binance, Bybit, KuCoin, and 100+ exchanges via ccxt
 
-## 快速开始
+## Quick Start
 
 ```bash
-# 1. 安装依赖
+# 1. Install dependencies
 pip install -r requirements.txt
 
-# 2. 配置
+# 2. Configure
 cp config/config.example.yaml config/config.yaml
-# 编辑 config/config.yaml，填入你的设置
+# Edit config/config.yaml with your settings
 
-# 3. 回测（推荐先回测！）
+# 3. Backtest (recommended first step!)
 python -m src.main --backtest
 
-# 4. 回测所有策略对比
+# 4. Backtest all strategies for comparison
 python -m src.main --backtest-all
 
-# 5. 模拟交易（Paper Trading）
+# 5. Walk-forward validation (detect overfitting)
+python -m src.main --walk-forward
+
+# 6. Paper trading (simulated)
 python -m src.main
 
-# 6. 实盘交易（谨慎！）
-# 在 config.yaml 中设置 mode: "live" 并填入 API 密钥
+# 7. Live trading (use with caution!)
+# Set mode: "live" in config.yaml and add your API keys
 python -m src.main
+
+# 8. Run system verification
+python -m tests.verify
 ```
 
-## 策略说明
+## Strategies
 
-| 策略 | 适用场景 | 原理 |
-|------|---------|------|
-| `rsi_macd` | 趋势+动量 | RSI超卖回升 + MACD金叉 + EMA趋势过滤 |
-| `mean_reversion` | 震荡市 | 价格触及布林带下轨 + RSI超卖 = 买入 |
-| `grid` | 横盘整理 | 在价格区间内设置网格，低买高卖 |
-| `dca_momentum` | 长期积累 | 定投 + 动量过滤，只在有利时机买入 |
+| Strategy | Best For | How It Works |
+|----------|----------|--------------|
+| `rsi_macd` | Trend + Momentum | RSI oversold recovery + MACD golden cross + EMA trend filter |
+| `mean_reversion` | Ranging Markets | Price touches lower Bollinger Band + RSI oversold = buy |
+| `grid` | Sideways Markets | Sets grid levels within a price range, buys low / sells high |
+| `dca_momentum` | Long-term Accumulation | Dollar-cost averaging + momentum filter, buys only at favorable times |
+| `ensemble` | All Conditions | Regime-adaptive multi-strategy voting with dynamic weighting |
+| `kama_trend` | Adaptive Trending | Uses Kaufman Adaptive MA for fewer whipsaws in noisy markets |
 
-## 风险管理参数
+## Risk Management Parameters
 
 ```yaml
 risk:
-  max_position_pct: 0.30    # 单次最大仓位：30%
-  stop_loss_pct: 0.03       # 止损：3%
-  take_profit_pct: 0.06     # 止盈：6% (2:1 盈亏比)
-  max_daily_loss_pct: 0.05  # 日最大亏损：5% → 停止交易
-  max_drawdown_pct: 0.25    # 最大回撤：25% → 停止交易
-  risk_per_trade_pct: 0.02  # 每笔风险：2%
+  max_position_pct: 0.30    # Max position size per trade: 30%
+  stop_loss_pct: 0.03       # Stop loss: 3%
+  take_profit_pct: 0.06     # Take profit: 6% (2:1 reward-to-risk)
+  max_daily_loss_pct: 0.05  # Daily max loss: 5% -> halt trading
+  max_drawdown_pct: 0.25    # Max drawdown: 25% -> halt trading
+  risk_per_trade_pct: 0.02  # Risk per trade: 2%
 ```
 
-## 项目结构
+## Project Structure
 
 ```
 ├── config/
-│   └── config.example.yaml   # 配置模板
+│   └── config.example.yaml      # Configuration template
 ├── src/
-│   ├── main.py                # 入口
-│   ├── bot.py                 # 交易机器人主逻辑
-│   ├── exchange/client.py     # 交易所连接 (ccxt)
-│   ├── strategies/            # 交易策略
-│   │   ├── rsi_macd.py        # RSI + MACD 策略
-│   │   ├── mean_reversion.py  # 均值回归策略
-│   │   ├── grid_trading.py    # 网格交易策略
-│   │   └── dca_momentum.py    # DCA 动量策略
-│   ├── risk/manager.py        # 风险管理
-│   ├── indicators/technical.py # 技术指标
-│   └── backtesting/engine.py  # 回测引擎
-├── tests/                     # 单元测试
-├── logs/                      # 运行日志
-└── data/                      # 数据存储
+│   ├── main.py                   # Entry point (CLI)
+│   ├── bot.py                    # Trading bot orchestrator
+│   ├── exchange/
+│   │   ├── base.py               # Exchange abstraction (ABC)
+│   │   ├── ccxt_adapter.py       # Live exchange adapter (100+ exchanges)
+│   │   └── paper_adapter.py      # Simulated trading adapter
+│   ├── strategies/
+│   │   ├── base.py               # Strategy interface
+│   │   ├── rsi_macd.py           # RSI + MACD strategy
+│   │   ├── mean_reversion.py     # Mean reversion strategy
+│   │   ├── grid_trading.py       # Grid trading strategy
+│   │   ├── dca_momentum.py       # DCA momentum strategy
+│   │   ├── ensemble.py           # Regime-adaptive ensemble
+│   │   ├── kama_trend.py         # KAMA adaptive trend strategy
+│   │   └── regime.py             # Market regime detection
+│   ├── risk/manager.py           # Risk management
+│   ├── indicators/technical.py   # Technical indicators (RSI, MACD, KAMA, etc.)
+│   ├── backtesting/
+│   │   ├── engine.py             # Backtest engine
+│   │   └── walk_forward.py       # Walk-forward optimization
+│   └── utils/logger.py           # Logging
+├── tests/
+│   ├── test_indicators.py        # Indicator unit tests
+│   ├── test_risk_manager.py      # Risk manager unit tests
+│   ├── test_strategies.py        # Strategy unit tests
+│   ├── test_integration.py       # Integration tests
+│   └── verify.py                 # Full system verification suite
+└── docs/
+    └── QUANT_RESEARCH.md         # Academic research references
 ```
 
-## 使用建议
+## System Verification
 
-1. **先回测** → 用 `--backtest-all` 找到最适合当前市场的策略
-2. **再模拟** → Paper trading 至少运行 1-2 周观察
-3. **小额实盘** → 确认策略可行后，用小额资金测试
-4. **持续监控** → 自动化≠无人值守，定期检查和调整
+Run the full verification suite to confirm everything works:
+
+```bash
+# Quick verification (no network, uses synthetic data)
+python -m tests.verify
+
+# Run unit tests
+python -m pytest tests/ -v
+
+# Run integration tests
+python -m pytest tests/test_integration.py -v
+```
+
+The verification suite checks:
+- All indicators compute correctly
+- All strategies produce valid signals
+- Risk manager enforces limits properly
+- Backtest engine produces consistent results
+- Walk-forward validation detects overfitting
+- Ensemble regime detection adapts correctly
+- Full pipeline: data -> indicators -> strategy -> risk -> execution
+
+## Usage Tips
+
+1. **Backtest first** — Use `--backtest-all` to find the best strategy for current market conditions
+2. **Validate** — Run `--walk-forward` to check for overfitting before deploying
+3. **Paper trade** — Simulate for at least 1-2 weeks before going live
+4. **Start small** — Use small capital when going live for the first time
+5. **Monitor continuously** — Automated does not mean unattended; check and adjust regularly
