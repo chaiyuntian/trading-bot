@@ -188,18 +188,32 @@
   <div>
     <label>Strategy</label><br>
     <select id="strategy">
-      <option value="ensemble" selected>Ensemble (recommended)</option>
+      <option value="alpha" selected>Alpha Combiner (21 signals)</option>
+      <option value="ensemble">Ensemble (regime-adaptive)</option>
+      <option value="kama_trend">KAMA Trend</option>
       <option value="rsi_macd">RSI + MACD</option>
       <option value="mean_reversion">Mean Reversion</option>
       <option value="grid">Grid Trading</option>
       <option value="dca_momentum">DCA Momentum</option>
-      <option value="kama_trend">KAMA Trend</option>
     </select>
   </div>
   <div>
+    <label>Timeframe</label><br>
+    <select id="timeframe">
+      <option value="15m">15m</option>
+      <option value="1h">1h</option>
+      <option value="4h" selected>4h</option>
+      <option value="1d">1d</option>
+    </select>
+  </div>
+  <div>
+    <label>Capital ($)</label><br>
+    <input type="number" id="capital" value="10000" style="width:80px">
+  </div>
+  <div>
     <label>Speed (ms/candle)</label><br>
-    <input type="range" id="speed" min="0" max="200" value="20" style="width:120px">
-    <span id="speed-label">20ms</span>
+    <input type="range" id="speed" min="0" max="200" value="10" style="width:100px">
+    <span id="speed-label">10ms</span>
   </div>
   <div style="margin-left:auto">
     <button class="btn-start" id="btn-start" onclick="startSim()">Start Simulation</button>
@@ -260,7 +274,7 @@ let candleSeries = null;
 let markers = [];
 let equitySeries = null;
 let totalCandles = 0;
-const initialCapital = 1000;
+let initialCapital = 10000;
 
 const speedSlider = document.getElementById('speed');
 const speedLabel = document.getElementById('speed-label');
@@ -344,6 +358,7 @@ function showReport(stats) {
     ['Sharpe Ratio', stats.sharpe_ratio.toFixed(2), stats.sharpe_ratio >= 1 ? 'green' : 'yellow'],
     ['Sortino Ratio', stats.sortino_ratio.toFixed(2), stats.sortino_ratio >= 2 ? 'green' : 'yellow'],
     ['Max Drawdown', `${stats.max_drawdown_pct.toFixed(2)}%`, stats.max_drawdown_pct < 10 ? 'green' : 'red'],
+    ['BTC Buy & Hold', `${(stats.btc_buy_hold_roi || 0).toFixed(1)}%`, 'blue'],
   ];
 
   grid.innerHTML = items.map(([label, value, color]) =>
@@ -354,7 +369,10 @@ function showReport(stats) {
 function startSim() {
   const strategy = document.getElementById('strategy').value;
   const speed = parseInt(speedSlider.value);
+  const timeframe = document.getElementById('timeframe').value;
+  const capital = parseInt(document.getElementById('capital').value) || 10000;
 
+  initialCapital = capital;
   document.getElementById('btn-start').disabled = true;
   document.getElementById('btn-start').textContent = 'Running...';
   document.getElementById('trades').innerHTML = '';
@@ -370,7 +388,7 @@ function startSim() {
 
   ws.onopen = () => {
     setStatus('Connected', 'connected');
-    ws.send(JSON.stringify({ strategy, speed }));
+    ws.send(JSON.stringify({ strategy, speed, timeframe, capital }));
   };
 
   ws.onmessage = (event) => {

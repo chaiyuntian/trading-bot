@@ -59,8 +59,18 @@ class SignalCombiner:
     def __init__(self, config: dict):
         params = config.get("strategy", {}).get("params", {})
         self.threshold = params.get("combiner_threshold", 0.15)
+        self.sell_threshold = params.get("combiner_sell_threshold", 0.25)  # harder to sell than buy
         self.regime_blend = params.get("combiner_regime_blend", 0.5)
         self.min_signals = params.get("combiner_min_signals", 3)
+
+        # Signal persistence — require N consecutive signals before acting
+        self.buy_persistence = params.get("combiner_buy_persistence", 2)
+        self.sell_persistence = params.get("combiner_sell_persistence", 3)
+        self._consecutive_buy = 0
+        self._consecutive_sell = 0
+
+        # Trend bias — in crypto, long bias is profitable
+        self.trend_bias = params.get("combiner_trend_bias", 0.05)  # slight long bias
 
         self.signals: list[AlphaSignal] = [
             # Momentum (7)
@@ -293,11 +303,29 @@ class SignalCombiner:
         # Apply volume and volatility modifiers
         normalized *= vol_multiplier * vol_scale_factor
 
+        # Trend bias: slight long bias (crypto tends to trend up long-term)
+        if regime in (MarketRegime.TRENDING_UP, MarketRegime.RANGING):
+            normalized += self.trend_bias
+
         reason = f"Regime={regime.value} score={normalized:+.3f} n={active_signals} | " + " ".join(signal_details[:8])
 
-        if normalized > self.threshold:
+        # Signal persistence — require consecutive agreement
+        is_buy = normalized > self.threshold
+        is_sell = normalized < -self.sell_threshold
+
+        if is_buy:
+            self._consecutive_buy += 1
+            self._consecutive_sell = 0
+        elif is_sell:
+            self._consecutive_sell += 1
+            self._consecutive_buy = 0
+        else:
+            self._consecutive_buy = 0
+            self._consecutive_sell = 0
+
+        if is_buy and self._consecutive_buy >= self.buy_persistence:
             confidence = min(1.0, abs(normalized))
-            logger.info(f"ALPHA BUY | {reason}")
+            logger.info(f"ALPHA BUY (persist={self._consecutive_buy}) | {reason}")
             return TradeSignal(
                 Signal.BUY, confidence, reason,
                 entry_price=price,
@@ -305,9 +333,9 @@ class SignalCombiner:
                            "active_signals": active_signals},
             )
 
-        if normalized < -self.threshold:
+        if is_sell and self._consecutive_sell >= self.sell_persistence:
             confidence = min(1.0, abs(normalized))
-            logger.info(f"ALPHA SELL | {reason}")
+            logger.info(f"ALPHA SELL (persist={self._consecutive_sell}) | {reason}")
             return TradeSignal(
                 Signal.SELL, confidence, reason,
                 entry_price=price,

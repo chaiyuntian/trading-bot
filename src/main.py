@@ -146,6 +146,8 @@ def main():
                         help="Override strategy name")
     parser.add_argument("--async", dest="use_async", action="store_true",
                         help="Use async WebSocket bot (lowest latency)")
+    parser.add_argument("--viz", action="store_true",
+                        help="Open live dashboard in browser for visualization")
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -160,6 +162,11 @@ def main():
         log_file=log_cfg.get("file", "logs/trading.log"),
         console=log_cfg.get("console", True),
     )
+
+    if args.viz:
+        from dashboard.server import start_server
+        start_server(open_browser=True)
+        return
 
     if args.walk_forward:
         run_walk_forward(config)
