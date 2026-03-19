@@ -58,6 +58,30 @@ class AlphaCombinerStrategy:
 
 STRATEGY_MAP["alpha"] = AlphaCombinerStrategy
 
+
+class ThinkingStrategy:
+    """Adapter: wraps ThinkingEngine as a strategy for backtest/dashboard."""
+    strategy_name = "Thinking Engine"
+
+    def __init__(self, config: dict):
+        from src.alpha.thinking import ThinkingEngine
+        self.engine = ThinkingEngine(config)
+        self.config = config
+        self.params = config.get("strategy", {}).get("params", {})
+
+    def name(self):
+        return self.strategy_name
+
+    def generate_signal(self, df):
+        sig = self.engine.think(df)
+        return sig.signal.value
+
+    def generate_rich_signal(self, df):
+        return self.engine.think(df)
+
+
+STRATEGY_MAP["thinking"] = ThinkingStrategy
+
 # Timeframe to seconds mapping
 _TF_SECONDS = {
     "1m": 60, "3m": 180, "5m": 300, "15m": 900,

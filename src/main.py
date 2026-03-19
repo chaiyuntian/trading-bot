@@ -148,12 +148,19 @@ def main():
                         help="Use async WebSocket bot (lowest latency)")
     parser.add_argument("--viz", action="store_true",
                         help="Open live dashboard in browser for visualization")
+    parser.add_argument("--evolve", action="store_true",
+                        help="Run evolution loop to optimize parameters")
     args = parser.parse_args()
 
     # --viz doesn't need config file
     if args.viz:
         from dashboard.server import start_server
         start_server(open_browser=True)
+        return
+
+    if args.evolve:
+        from src.evolution.evolver import main as evolve_main
+        evolve_main()
         return
 
     config = load_config(args.config)
